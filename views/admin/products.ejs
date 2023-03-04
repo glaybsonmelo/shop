@@ -1,0 +1,14 @@
+<%- include("../includes/head")%>
+</head>
+
+<body>
+    <%- include("../includes/navigation")%>
+    <h1>ADMIN</h1>
+    <ul>
+        <% products.forEach(product => { %>
+            <li><%= product.title %></li>
+
+       <% }) %>
+        
+    </ul>
+<%- include("../includes/end") %>
