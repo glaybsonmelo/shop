@@ -10,8 +10,8 @@ exports.getAddProduct = (req, res, next) => {
 }
 
 exports.postAddProduct = (req, res) => {
-    let { title } = req.body;
-    let product = new Product(title);
+    let { title, imageUrl, price, description } = req.body;
+    let product = new Product(title, imageUrl, price, description);
     product.save();
     res.redirect("/");
 }
@@ -24,4 +24,12 @@ exports.getProducts = (req, res) => {
             products
         })
     })
+}
+
+exports.getEditProduct = (req, res) => {
+    res.render("admin/edit-product",{
+        pageTitle:"Edit Product",
+        path:""
+    }
+    );
 }

@@ -1,0 +1,15 @@
+<%- include("../includes/head") %>
+</head>
+
+<body>
+<%- include("../includes/navigation") %>
+    <main class="centered">
+        <h2><%= product.title %></h2>
+        <div>
+            <img class="img" src="<%= product.imageUrl %>" alt="<%= product.slug %>">        
+        </div>
+        <h3>$<%= product.price %></h3>
+        <p><%= product.description %></p>
+
+    </main>
+<%- include("../includes/end") %>

@@ -12,9 +12,14 @@ exports.getIndex = (req, res) => {
 };
 
 exports.getProduct = (req, res) => {
-    let slug = req.params.slug;
-    // Product.findBySlug(slug);
-    res.send(slug);
+    const slug = req.params.slug;
+    Product.findBySlug(slug, product => {
+        res.render("shop/product-detail", {
+            pageTitle:product.title,
+            path:"",
+            product
+        });
+    })
 };
 
 exports.getProducts = (req, res) => {
@@ -29,6 +34,10 @@ exports.getProducts = (req, res) => {
 
 exports.getCart = (req, res) => {
     res.render("shop/cart", {pageTitle:"Your Cart", path:"/cart"});
+}
+
+exports.getOrders = (req, res) => {
+    res.render("shop/orders", {pageTitle:"Your Orders", path:"/orders"})
 }
 
 exports.getCheckout = (req, res) => {
