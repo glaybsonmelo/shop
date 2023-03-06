@@ -4,6 +4,9 @@ const path = require("path");
 const slugify = require('slugify');
 const { v4 }  = require('uuid');
 
+const Cart = require("./Cart");
+
+
 const p = path.join(path.dirname(require.main.filename), "data", "products.json");
 
 const getPrductsFromFile = callback => {
@@ -32,7 +35,7 @@ module.exports = class Product{
 
             if(this.id){
                 let existingProductIndex = products.findIndex(prod => prod.id === this.id);
-                console.log(existingProductIndex)
+                //console.log(existingProductIndex)
                 
                 const updatedProducts = [...products]
                 updatedProducts[existingProductIndex] = this;
@@ -40,10 +43,8 @@ module.exports = class Product{
                 fs.writeFile(p, JSON.stringify(updatedProducts), error => {
                     if(error)
                         console.log(error)
-                });
-                
-            }
-            else{
+                });      
+            }else{
                 this.id = v4();
                 products.push(this);
                 fs.writeFile(p, JSON.stringify(products), error => {
@@ -54,6 +55,19 @@ module.exports = class Product{
         })
 
     }
+
+    static deleteById(id){
+        getPrductsFromFile(products => {
+            const product = products.find(prod => prod.id == id);
+            const updatedProducts = products.filter(prod => prod.id !== id);
+            fs.writeFile(p, JSON.stringify(updatedProducts), err => {
+                if(!err){
+                 Cart.deleteProduct(id, product.price);
+                }
+            });
+        });
+    };
+
     static findAll(callback){
         getPrductsFromFile(callback);
     }

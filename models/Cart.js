@@ -1,4 +1,3 @@
-const Product = require("./Product");
 const path = require("path");
 const fs = require("fs");
 
@@ -12,11 +11,9 @@ module.exports = class Cart{
         fs.readFile(p, (err, fileContent) => {
             let cart = {products: [], totalPrice: 0}
 
-
             if(!err){
                 cart = JSON.parse(fileContent);
             }
-
             const existingProductIndex = cart.products.findIndex(prod => prod.id === id);
             const existingProduct = cart.products[existingProductIndex];
             let updatedProduct;
@@ -36,4 +33,25 @@ module.exports = class Cart{
             });
         })
     }
+    
+    static deleteProduct(id, productPrice){
+        console.log(id)
+        fs.readFile(p, (err, fileContent) => {
+            if(err) return;
+
+            const updatedCart = {...JSON.parse(fileContent) }
+
+            const product = updatedCart.products.find(prod => prod.id === id);
+
+            if(product){
+                updatedCart.totalPrice -= product.qty * productPrice;
+                updatedCart.products = updatedCart.products.filter(prod => prod.id != id);
+                
+                fs.writeFile(p, JSON.stringify(updatedCart), err => {
+                    console.log(err);
+                })
+            }
+
+        });
+    };
 }
