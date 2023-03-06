@@ -23,10 +23,9 @@
                         </div>
                         <div class="card__actions">
                             <a class="btn" href="/products/<%= product.slug %>">Details</a>
-                            <form action="/shop/add-to-cart" method="POST">
-                                <input type="hidden" value="<%= product.id %>">
-                                <button class="btn">Add to Cart</button>
-                            </form>
+                            <%- include("../includes/add-to-cart", {product}) %>
+
+
                         </div>
                     </article>
                 <%} %>

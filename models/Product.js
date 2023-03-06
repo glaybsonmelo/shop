@@ -1,8 +1,10 @@
 const fs = require("fs");
 const path = require("path");
+
 const slugify = require('slugify');
-const p = path.join(path.dirname(require.main.filename), "data", "products.json");
 const { v4 }  = require('uuid');
+
+const p = path.join(path.dirname(require.main.filename), "data", "products.json");
 
 const getPrductsFromFile = callback => {
     fs.readFile(p, async (err, fileContent) => {
@@ -47,7 +49,7 @@ module.exports = class Product{
     }
     static findById(id, callback){
         getPrductsFromFile(products => {
-            const product = products.find(p => p.id == id);
+            const product = products.find(prod => prod.id === id);
             if(product) 
                 callback(product);
             else callback([]);
