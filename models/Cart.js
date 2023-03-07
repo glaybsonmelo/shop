@@ -35,7 +35,6 @@ module.exports = class Cart{
     }
     
     static deleteProduct(id, productPrice){
-        console.log(id)
         fs.readFile(p, (err, fileContent) => {
             if(err) return;
 
@@ -43,15 +42,27 @@ module.exports = class Cart{
 
             const product = updatedCart.products.find(prod => prod.id === id);
 
-            if(product){
-                updatedCart.totalPrice -= product.qty * productPrice;
-                updatedCart.products = updatedCart.products.filter(prod => prod.id != id);
-                
-                fs.writeFile(p, JSON.stringify(updatedCart), err => {
-                    console.log(err);
-                })
+            if(!product){
+                return;
             }
+            updatedCart.totalPrice -= product.qty * productPrice;
+            updatedCart.products = updatedCart.products.filter(prod => prod.id != id);
+            
+            fs.writeFile(p, JSON.stringify(updatedCart), err => {
+                console.log(err);
+            })
 
         });
+    };
+
+    static getCart(callback){
+        fs.readFile(p, (err, fileContent) => {
+            const cart = JSON.parse(fileContent);
+            if(err)
+                callback(null);
+            else 
+                callback(cart)
+        });
+         
     };
 }
