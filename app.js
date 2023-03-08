@@ -5,6 +5,9 @@ const bodyParser = require("body-parser");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
+const Product = require("./models/Product");
+
+
 const errorController = require("./controllers/error");
 
 app.set("view engine", "ejs");
@@ -22,4 +25,10 @@ app.use(shopRoutes);
 // Middleware for 404
 app.use(errorController.get404);
 
-app.listen(3000, () => {console.log("Server on")});
+Product.sync()
+    .then(result => {
+        console.log(result)
+        app.listen(3000, () => {console.log("Server on")});
+    })
+    .catch(err => console.log(err));
+

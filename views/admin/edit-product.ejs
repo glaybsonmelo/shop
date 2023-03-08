@@ -8,22 +8,22 @@
 
     <main>
         <form class="product-form" action="/admin/edit-product" method="POST">
-            <input type="text" hidden name="productId" value="<%= product.id %>">
+            <input type="text" hidden name="prodId" value="<%= product.id %>">
             <div class="form-control">
                 <label for="title">Title</label>
-                <input type="text" name="updatedTitle" id="updatedTitle" value="<%= product.title %>">
+                <input type="text" name="title" id="title" value="<%= product.title %>">
             </div>
             <div class="form-control">
                 <label for="imageUrl">Image URL</label>
-                <input type="text" name="updatedImageUrl" id="updatedImageUrl" value="<%= product.imageUrl %>" >
+                <input type="text" name="imageUrl" id="imageUrl" value="<%= product.imageUrl %>" >
             </div>
             <div class="form-control">
                 <label for="price">Price</label>
-                <input type="number" name="updatedPrice" id="updatedPrice" step="0.01" value="<%= product.price %>">
+                <input type="number" name="price" id="price" step="0.01" value="<%= product.price %>">
             </div>
             <div class="form-control">
                 <label for="description">Description</label>
-                <textarea name="updatedDescription" id="updatedDescription" rows="5"><%= product.description %></textarea>
+                <textarea name="description" id="description" rows="5"><%= product.description %></textarea>
             </div>
 
             <button class="btn" type="submit">Update Product</button>
