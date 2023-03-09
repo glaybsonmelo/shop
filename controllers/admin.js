@@ -11,8 +11,9 @@ exports.getAddProduct = (req, res) => {
 }
 
 exports.postAddProduct = (req, res) => {
-    let { title, imageUrl, price, description } = req.body;
-    Product.create({
+    const { title, imageUrl, price, description } = req.body;
+
+    req.user.createProduct({
         title, slug:slugify(title, {lower:true}), price, description, imageUrl
     }).then(() => {
         res.redirect("/admin/products");
@@ -38,15 +39,16 @@ exports.getEditProduct = (req, res) => {
 
 exports.postEditProduct = (req, res) => {
     const {prodId, title, imageUrl, price, description} = req.body;
-    Product.update({
-        title,
-        slug:slugify(title, {lower:true}), 
-        price,
-        description,
-        imageUrl
-    },
-    {
-        where:{id:prodId}
+    req.user.getProducts(
+        {where:{id:prodId}
+    })
+    .then(([product]) => {
+        product.title = title,
+        product.slug = slugify(title, {lower:true}), 
+        product.price = price,
+        product.description = description,
+        product.imageUrl = imageUrl    
+        return product.save();
     })
     .then(() => {
         res.redirect("/admin/products");
@@ -56,7 +58,7 @@ exports.postEditProduct = (req, res) => {
 };
 
 exports.getProducts = (req, res) => {
-    Product.findAll().then(products => {
+    req.user.getProducts().then(products => {
         res.render("admin/products", {
             pageTitle:"Admin Products", 
             path:"/admin/products",

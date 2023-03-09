@@ -6,9 +6,12 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
 const Product = require("./models/Product");
-
+const User = require("./models/User");
+const Cart = require('./models/Cart');
 
 const errorController = require("./controllers/error");
+const sequelize = require('./util/database');
+const CartItem = require('./models/Cart-item');
 
 app.set("view engine", "ejs");
 
@@ -19,16 +22,49 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
+
+app.use((req, res, next) => {
+    User.findByPk(1)
+    .then(user => {
+        if(user){
+            req.user = user;
+            next()
+        }else{
+            res.send("Não logado!");
+        };
+    })
+    .catch(err => console.log(err));
+})
+
+
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 // Middleware for 404
 app.use(errorController.get404);
 
-Product.sync()
+
+Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+User.hasMany(Product);
+
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, {through: CartItem});
+Product.belongsToMany(Cart, {through: CartItem});
+
+
+sequelize.sync({force:true})
     .then(result => {
-        console.log(result)
-        app.listen(3000, () => {console.log("Server on")});
+        return User.findByPk(1);
+    })
+    .then(user => {
+        if(!user){
+            return User.create({name:"Antonio Glaybson", email:"gley@gmail.com", password:"123456"});
+        }
+        return user;
+    })
+    .then(user => {
+        app.listen(3000)
     })
     .catch(err => console.log(err));
 
