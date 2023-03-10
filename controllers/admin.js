@@ -3,7 +3,6 @@ const Product = require("../models/Product");
 
 
 exports.getAddProduct = (req, res) => {
-    // res.sendFile(path.join(rootDir,"views", "add-product.html"));
     res.render("admin/add-product",  {
         pageTitle:"Add Product",
         path:"/admin/add-product"
