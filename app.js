@@ -8,10 +8,13 @@ const shopRoutes = require("./routes/shop");
 const Product = require("./models/Product");
 const User = require("./models/User");
 const Cart = require('./models/Cart');
+const CartItem = require('./models/Cart-item');
+const Order = require('./models/Order');
+const OrderItem = require('./models/Order-items');
+
 
 const errorController = require("./controllers/error");
 const sequelize = require('./util/database');
-const CartItem = require('./models/Cart-item');
 
 app.set("view engine", "ejs");
 
@@ -53,11 +56,18 @@ User.hasOne(Cart);
 Cart.belongsTo(User);
 
 // many-to-many
-Cart.belongsToMany(Product, {through: CartItem});
-Product.belongsToMany(Cart, {through: CartItem});
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 
+Order.belongsTo(User);
+User.hasMany(Order);
 
-sequelize.sync()
+Order.belongsToMany(Product, { through: OrderItem });
+Product.belongsToMany(Order, { through: OrderItem })
+
+sequelize
+    .sync()
+// .sync({force:true})
     .then(result => {
         return User.findByPk(1);
     })

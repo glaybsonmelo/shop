@@ -209,6 +209,10 @@ form {
   color: red;
   border-color: red;
 }
+.btn.info {
+  color: rgb(0, 255, 0);
+  border-color: rgb(0, 225, 0);
+}
 
 .btn.danger:hover,
 .btn.danger:active {
