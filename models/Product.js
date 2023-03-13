@@ -1,7 +1,18 @@
-const { STRING, FLOAT } = require('sequelize');
-
-const Cart = require("./Cart");
-const sequelize = require("../util/database");
+const slugify = require("slugify");
+const { mongoConnect, getDb } = require("../util/database");
+ 
+class Product{
+    constructor(title, price, description, imageUrl){
+        this.title = title;
+        this.slug = slugify(title, {lower:true});
+        this.price = price;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+    save(){
+        mongoConnect.
+    }
+}
 
 const Product = sequelize.define('products',{
     title:{
