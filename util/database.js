@@ -9,7 +9,7 @@ const mongoConnect = callback => {
   )
     .then(client => {
       console.log('Connected!');
-      _db = client.db;
+      _db = client.db();
       callback();
     })
     .catch(err => {
@@ -20,7 +20,7 @@ const mongoConnect = callback => {
 
 const getDb = () => {
   if(_db){
-    return db;
+    return _db;
   }
   throw 'NO database found'
 }
