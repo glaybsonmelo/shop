@@ -3,7 +3,6 @@ const Cart = require("../models/Cart");
 
 exports.getIndex = (req, res) => {
     Product.fetchAll().then(products => {
-      console.log(products)
         res.render("shop/index", {
             products,
             pageTitle:"Products",
@@ -18,7 +17,6 @@ exports.getIndex = (req, res) => {
 exports.getProduct = (req, res) => {
     const slug = req.params.slug;
     Product.fetchBySlug(slug).then(product => {
-      console.log(product[0])
         res.render("shop/product-detail", {
             pageTitle:product.title,
             path:"/products",

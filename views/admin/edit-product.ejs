@@ -8,7 +8,7 @@
 
     <main>
         <form class="product-form" action="/admin/edit-product" method="POST">
-            <input type="text" hidden name="prodId" value="<%= product.id %>">
+            <input type="text" hidden name="prodId" value="<%= product._id %>">
             <div class="form-control">
                 <label for="title">Title</label>
                 <input type="text" name="title" id="title" value="<%= product.title %>">
