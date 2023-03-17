@@ -3,14 +3,15 @@ const { mongoConnect, getDb } = require("../util/database");
 const mongodb = require('mongodb');
 
 class Product{
-    constructor(id, title, price, description, imageUrl){
+    constructor(id, title, price, description, imageUrl, userId){
 
-        this._id = id;
+        this._id = id ? new mongodb.ObjectId(id) : null;
         this.title = title;
         this.slug = slugify(title, {lower:true});
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.userId = userId;
     }
     save() {
         const db = getDb();
@@ -24,7 +25,6 @@ class Product{
         }
         return dbOp
           .then(result => {
-            console.log(result);
           })
           .catch(err => {
             console.log(err);
@@ -39,7 +39,6 @@ class Product{
     static fetchById(id){
         const db = getDb();
         return db.collection('products').find({_id: new mongodb.ObjectId(id)}).next().then(product => {
-            // console.log("Prod in MODEL: ", product, new mongodb.ObjectId(id))
             return product;
         })
     }
@@ -48,6 +47,10 @@ class Product{
         return db.collection('products').find({slug:slug}).next().then(product => {
             return product;
         })
+    }
+    static deleteById(id){
+        const db = getDb();
+        return db.collection("products").deleteOne({_id: new mongodb.ObjectId(id)});
     }
 }
 
