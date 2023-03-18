@@ -25,8 +25,11 @@ app.use((req, res, next) => {
 app.use( async (req, res, next) => {
     User.findById('6414b50cac1d24be383a44e3')
       .then(user => {
-        req.user = user;
-        console.log(user)
+        if (!user.cart) {
+          console.log("No cart.");
+          user.cart = { items: [] };
+        } 
+        req.user = new User(user._id, user.name, user.email, user.password, user.cart);
         next();
     })
     .catch(err => console.log(err));

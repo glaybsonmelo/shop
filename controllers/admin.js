@@ -13,8 +13,6 @@ exports.getAddProduct = (req, res) => {
 
 exports.postAddProduct = (req, res) => {
     const { title, imageUrl, price, description } = req.body;
-    console.log("adm post: ",req.user)
-    // const userId = ;
     const product = new Product(null, title, price, description, imageUrl, req.user._id);
     product.save()
         .then(() => {
@@ -24,7 +22,6 @@ exports.postAddProduct = (req, res) => {
 }
 
 exports.getEditProduct = (req, res) => {
-    
     const productId = req.params.id;
     Product.fetchById(productId).then(product => {
         if(!product) {
@@ -37,7 +34,6 @@ exports.getEditProduct = (req, res) => {
         });
     }).catch(err => console.log(err));
 }
-
 
 exports.postEditProduct = (req, res, next) => {
     const {prodId, title, imageUrl, price, description} = req.body;
