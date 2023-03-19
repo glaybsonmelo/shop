@@ -37,11 +37,12 @@ exports.getProducts = (req, res) => {
     })
 };
 
-// exports.getOrders = (req, res) => {
-//   req.user.getOrders({include:['products']}).then(orders => {
-//     res.render("shop/orders", {pageTitle:"Your Orders", path:"/orders", orders})
-//   }).catch(err => console.log(err));
-// }
+exports.getOrders = (req, res) => {
+  req.user.getOrders().then(orders => {
+    console.log(orders)
+    res.render("shop/orders", {pageTitle:"Your Orders", path:"/orders", orders})
+  }).catch(err => console.log(err));
+}
 
 // exports.getCheckout = (req, res) => {
 //     res.render("shop/checkout", {pageTitle: "Checkout", path:""});
@@ -68,8 +69,7 @@ exports.postCart = (req, res) => {
       return req.user.addToCart(product);
     })
     .then(result => {
-      console.log(result);
-      res.redirect('/');
+      res.redirect('/cart');
     });
 
     // let fetchedCart;
@@ -102,41 +102,19 @@ exports.postCart = (req, res) => {
     //   })
     //   .catch(err => console.log(err));
 };
-// exports.postCartDeleteProduct = (req, res) => {
-//   const prodId = req.body.prodId;
-//   req.user.getCart().then(cart => {
-//     return cart.getProducts({where:{id:prodId}});
-//   })
-//   .then((products) => {
-//     const product = products[0];
-//     return product.cartItems.destroy();
-//   })
-//   .then(() => {
+exports.postCartDeleteProduct = (req, res) => {
+    const prodId = req.body.prodId;
 
-//     res.redirect("/cart");
-//   })
-//   .catch(err => console.log(err));
-// }
+    req.user.deleteItemFromCart(prodId)
+    .then(() => {
+        res.redirect("/cart");
+    })
+    .catch(err => console.log(err));
+}
 
-// exports.postOrder = (req, res) => {
-//   let fetchedCart;
-//   req.user.getCart().then(cart => {
-//     fetchedCart = cart;
-//     return cart.getProducts();
-//   }).then(products => {
-//     return req.user
-//     .createOrder()
-//     .then(order => {
-//         return order.addProducts(products.map(product => {
-//           product.orderItems = { quantity: product.cartItems.quantity }
-//           return product;
-//         }))
-//     })
-//       .catch(err => console.log(err));
-//   }).then(result => {
-//     return fetchedCart.setProducts(null);
-//   }).then(() => {
-//     res.redirect("/orders");
-//   })
-//   .catch(err => console.log(err));
-// }
+exports.postOrder = (req, res) => {
+  req.user.addOrder().then(() => {
+    res.redirect("/orders");
+  })
+  .catch(err => console.log(err));
+}
