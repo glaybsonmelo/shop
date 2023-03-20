@@ -6,8 +6,9 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
 const errorController = require("./controllers/error");
-const { mongoConnect } = require('./util/database');
+// const { mongoConnect } = require('./util/database');
 const User = require('./models/User');
+const mongoose = require('mongoose');
 
 app.set("view engine", "ejs");
 
@@ -42,15 +43,19 @@ app.use(shopRoutes);
 // Middleware for 404
 app.use(errorController.get404);
 
-mongoConnect( async () => {
-  // if(req.user){
+// mongoConnect( async () => {
+//   // if(req.user){
 
-  // }else {
-  //   const user = new User("admin", "admin@admin.com", "6170");
-  //   user.save()
-  //   .then(() => {app.listen(3000)})
-  app.listen(3000)
-  //   .catch(err => console.log(err));
-  // }
-  });
+//   // }else {
+//   //   const user = new User("admin", "admin@admin.com", "6170");
+//   //   user.save()
+//   //   .then(() => {app.listen(3000)})
+//   app.listen(3000)
+//   //   .catch(err => console.log(err));
+//   // }
+//   });
+
+mongoose.connect("mongodb+srv://gleybsonmelo998:379KUThMsmgcBnnj@cluster0.hu8nwbh.mongodb.net/shop?retryWrites=true&w=majority").then(() => {
+  app.listen(3000);
+}).catch(err => console.log(err));
 

@@ -1,58 +1,26 @@
-const slugify = require("slugify");
-const { mongoConnect, getDb } = require("../util/database");
-const mongodb = require('mongodb');
+const mongoose = require("mongoose");
+const { FLOAT } = require("sequelize");
 
-class Product{
-    constructor(id, title, price, description, imageUrl, userId){
-
-        this._id = id ? new mongodb.ObjectId(id) : null;
-        this.title = title;
-        this.slug = slugify(title, {lower:true});
-        this.price = price;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.userId = userId;
-    }
-    save() {
-        const db = getDb();
-        let dbOp;
-        if (this._id) {
-          dbOp = db
-            .collection('products')
-            .updateOne({ _id: new mongodb.ObjectId(this._id) }, { $set: this});
-        } else {
-          dbOp = db.collection('products').insertOne(this);
-        }
-        return dbOp
-          .then(result => {
-          })
-          .catch(err => {
-            console.log(err);
-          });
-      }
-    static fetchAll(){
-        let db = getDb();
-        return db.collection("products").find().toArray().then(products => {
-            return products
-        }).catch(err => console.log(err));
-    }
-    static fetchById(id){
-        const db = getDb();
-        return db.collection('products').find({_id: new mongodb.ObjectId(id)}).next().then(product => {
-            return product;
-        })
-    }
-    static fetchBySlug(slug){
-        const db = getDb();
-        return db.collection('products').find({slug:slug}).next().then(product => {
-            return product;
-        })
-    }
-    static deleteById(id){
-        const db = getDb();
-        return db.collection("products").deleteOne({_id: new mongodb.ObjectId(id)});
-    }
-}
-
-
-module.exports = Product;
+const Schema = mongoose.Schema;
+const productSchema = new Schema({
+    title: {
+        type: String,
+        require: true
+    },
+    slug: {
+        type: String,
+        require: true
+    },
+    price: {
+        type: Number,
+        require: true
+    },
+    description: {
+        type: Number,
+        require: true
+    },
+    imageUrl: {
+        type: Number,
+        require: true
+    },
+})
