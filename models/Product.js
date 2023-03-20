@@ -16,11 +16,13 @@ const productSchema = new Schema({
         require: true
     },
     description: {
-        type: Number,
+        type: String,
         require: true
     },
     imageUrl: {
-        type: Number,
+        type: String,
         require: true
     },
-})
+});
+
+module.exports = mongoose.model("Product", productSchema);
