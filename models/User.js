@@ -12,6 +12,12 @@ const userSchema = new Schema({
         type: String,
         require: true
     },
+    cart:{
+        items: [{
+            productId:{type: Schema.Types.ObjectId, require: true},
+            quantity: {type: Number, require: true}
+        }]
+    }
 });
 
 module.exports = mongoose.model("User", userSchema);;
