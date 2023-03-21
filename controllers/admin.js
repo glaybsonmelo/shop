@@ -12,7 +12,7 @@ exports.getAddProduct = (req, res) => {
 
 exports.postAddProduct = (req, res) => {
     const { title, imageUrl, price, description } = req.body;
-    const product = new Product({title, slug:slugify(title), price, description, imageUrl});
+    const product = new Product({title, slug:slugify(title, {lower:true}), price, description, imageUrl});
     product.save()
         .then(() => {
             res.redirect('/');
@@ -20,51 +20,45 @@ exports.postAddProduct = (req, res) => {
         .catch(err => console.log(err));
 }
 
-// exports.getEditProduct = (req, res) => {
-//     const productId = req.params.id;
-//     Product.fetchById(productId).then(product => {
-//         if(!product) {
-//             res.redirect("/");
-//         }
-//         res.render("admin/edit-product",{
-//             pageTitle:"Edit Product",
-//             path:"/admin/products",
-//             product
-//         });
-//     }).catch(err => console.log(err));
-// }
+exports.getEditProduct = (req, res) => {
+    const productId = req.params.id;
+    Product.findById(productId).then(product => {
+        if(!product) {
+            res.redirect("/");
+        }
+        res.render("admin/edit-product",{
+            pageTitle:"Edit Product",
+            path:"/admin/products",
+            product
+        });
+    }).catch(err => console.log(err));
+}
 
-// exports.postEditProduct = (req, res, next) => {
-//     const {prodId, title, imageUrl, price, description} = req.body;
-  
-//     const product = new Product(
-//         prodId,
-//         title,
-//         price, 
-//         description, 
-//         imageUrl,
+exports.postEditProduct = (req, res, next) => {
+    const {prodId, title, imageUrl, price, description} = req.body;
+    
+    Product.findByIdAndUpdate({_id:prodId}, {
+        title,
+        slug:slugify(title, {lower:true}),
+        price,
+        description,
+        imageUrl
+    }).then(product => {  
+        console.log('UPDATED PRODUCT!');
+        res.redirect('/admin/products');
+    }).catch(err => console.log(err));
 
-//         );
+  };
 
-//     product
-//       .save()
-//       .then(result => {
-//         console.log('UPDATED PRODUCT!');
-//         res.redirect('/admin/products');
-//       })
-//       .catch(err => console.log(err));
-//   };
-
-
-// exports.getProducts = (req, res) => {
-//     Product.fetchAll().then(products => {
-//         res.render("admin/products", {
-//             pageTitle:"Admin Products", 
-//             path:"/admin/products",
-//             products
-//         })
-//     }).catch(err => console.log(err));
-// }
+exports.getProducts = (req, res) => {
+    Product.find().then(products => {
+        res.render("admin/products", {
+            pageTitle:"Admin Products", 
+            path:"/admin/products",
+            products
+        })
+    }).catch(err => console.log(err));
+}
 
 // exports.postDeleteProduct = (req, res) => {
 //     const productId = req.body.productId;
