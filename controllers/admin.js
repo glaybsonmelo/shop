@@ -60,11 +60,11 @@ exports.getProducts = (req, res) => {
     }).catch(err => console.log(err));
 }
 
-// exports.postDeleteProduct = (req, res) => {
-//     const productId = req.body.productId;
-//     Product.deleteById(productId)
-//     .then(() => {
-//         res.redirect("/admin/products");
-//     })
-//     .catch(err => console.log(err));
-// }
+exports.postDeleteProduct = (req, res) => {
+    const productId = req.body.productId;
+    Product.findByIdAndDelete(productId)
+    .then(() => {
+        res.redirect("/admin/products");
+    })
+    .catch(err => console.log(err));
+}
