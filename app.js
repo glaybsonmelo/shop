@@ -20,10 +20,6 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-  next()
-});
-
-app.use((req, res, next) => {
   User.findById('6419a1fdd207bec29d80866b').then(user => { 
       req.user = user;
       next() 

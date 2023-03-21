@@ -12,7 +12,9 @@ exports.getAddProduct = (req, res) => {
 
 exports.postAddProduct = (req, res) => {
     const { title, imageUrl, price, description } = req.body;
-    const product = new Product({title, slug:slugify(title, {lower:true}), price, description, imageUrl});
+    const product = new Product({title, slug:slugify(
+        title, {lower:true}), price, description, imageUrl, userId: req.user
+    });
     product.save()
         .then(() => {
             res.redirect('/');
