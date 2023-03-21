@@ -3,7 +3,6 @@ const Product = require("../models/Product");
 
 
 exports.getAddProduct = (req, res) => {
-    console.log("get",req.user)
     res.render("admin/add-product",  {
         pageTitle:"Add Product",
         path:"/admin/add-product"
@@ -53,7 +52,11 @@ exports.postEditProduct = (req, res, next) => {
   };
 
 exports.getProducts = (req, res) => {
-    Product.find().then(products => {
+    Product.find()
+    .select("title price imageUrl -_id")
+    .populate("userId", "name")
+    .then(products => {
+        console.log(products)
         res.render("admin/products", {
             pageTitle:"Admin Products", 
             path:"/admin/products",

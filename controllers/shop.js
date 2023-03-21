@@ -47,40 +47,41 @@ exports.getProducts = (req, res) => {
 // // exports.getCheckout = (req, res) => {
 // //     res.render("shop/checkout", {pageTitle: "Checkout", path:""});
 // // }
-// exports.getCart = (req, res, next) => {
-//     req.user
-//        .getCart()
-//           .then(products => {
-//             res.render('shop/cart', {
-//               path: '/cart',
-//               pageTitle: 'Your Cart',
-//               products: products
-//             });
-//           })
-//           .catch(err => console.log(err));
-// }
-   
 
+exports.getCart = (req, res, next) => {
 
-// exports.postCart = (req, res) => {
-//     const prodId = req.body.productId;
-//     Product.fetchById(prodId)
-//     .then(product => {
-//       return req.user.addToCart(product);
-//     })
-//     .then(result => {
-//       res.redirect('/cart');
-//     });
-// };
-// exports.postCartDeleteProduct = (req, res) => {
-//     const prodId = req.body.prodId;
+    req.user
+       .populate("cart.items.productId", "title price")
+          .then(user => {
+            // console.log(user.cart.items[0].productId.title)
+            res.render('shop/cart', {
+              path: '/cart',
+              pageTitle: 'Your Cart',
+              products: user.cart.items
+            });
+          })
+          .catch(err => console.log(err));
+}
 
-//     req.user.deleteItemFromCart(prodId)
-//     .then(() => {
-//         res.redirect("/cart");
-//     })
-//     .catch(err => console.log(err));
-// }
+exports.postCart = (req, res) => {
+    const prodId = req.body.productId;
+    Product.findById(prodId)
+    .then(product => {
+      return req.user.addToCart(product);
+    })
+    .then(result => {
+      res.redirect('/cart');
+    });
+};
+
+exports.postCartDeleteProduct = (req, res) => {
+    const prodId = req.body.prodId;
+    req.user.removeFromCart(prodId)
+    .then(() => {
+        res.redirect("/cart");
+    })
+    .catch(err => console.log(err));
+}
 
 // exports.postOrder = (req, res) => {
 //   req.user.addOrder().then(() => {
