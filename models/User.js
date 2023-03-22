@@ -21,6 +21,11 @@ const userSchema = new Schema({
     }
 });
 
+userSchema.methods.clearCart = function(){
+    this.cart = { items: [] };
+    return this.save();
+}
+
 userSchema.methods.removeFromCart = function(prodId){
     const updatedCartItems = this.cart.items.filter(prod => prod.productId.toString() != prodId.toString());
     this.cart.items = updatedCartItems;
