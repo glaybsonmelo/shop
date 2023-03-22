@@ -10,6 +10,8 @@ const errorController = require("./controllers/error");
 const User = require('./models/User');
 const mongoose = require('mongoose');
 
+require('dotenv').config()
+
 app.set("view engine", "ejs");
 
 app.set("views", "views");
@@ -35,8 +37,7 @@ app.use(errorController.get404);
 
 // Mongoose connection
 mongoose
-  .connect("mongodb+srv://gleybsonmelo998:379KUThMsmgcBnnj@cluster0.hu8nwbh.mongodb.net/shop?retryWrites=true&w=majority"
-  )
+  .connect(process.env.MONGODB_URL)
   .then(async result => {
     User.findById('6419a1fdd207bec29d80866b').then(user => {
       if(!user){

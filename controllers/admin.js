@@ -53,10 +53,9 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res) => {
     Product.find()
-    .select("title price imageUrl -_id")
+    .select("title price imageUrl _id")
     .populate("userId", "name")
     .then(products => {
-        console.log(products)
         res.render("admin/products", {
             pageTitle:"Admin Products", 
             path:"/admin/products",
