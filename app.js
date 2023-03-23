@@ -4,13 +4,13 @@ const bodyParser = require("body-parser");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 
 const errorController = require("./controllers/error");
-// const { mongoConnect } = require('./util/database');
 const User = require('./models/User');
 const mongoose = require('mongoose');
 
-require('dotenv').config()
+require('dotenv').config();
 
 app.set("view engine", "ejs");
 
@@ -24,12 +24,13 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
   User.findById('6419a1fdd207bec29d80866b').then(user => { 
       req.user = user;
-      next() 
+      next();
   }).catch(err => console.log(err));
 });
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 
 // Middleware for 404
