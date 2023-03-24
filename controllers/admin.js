@@ -5,7 +5,8 @@ const Product = require("../models/Product");
 exports.getAddProduct = (req, res) => {
     res.render("admin/add-product",  {
         pageTitle:"Add Product",
-        path:"/admin/add-product"
+        path:"/admin/add-product",
+        isAuthenticated: req.isLoggedI
     })
 }
 
@@ -30,7 +31,8 @@ exports.getEditProduct = (req, res) => {
         res.render("admin/edit-product",{
             pageTitle:"Edit Product",
             path:"/admin/products",
-            product
+            product,
+            isAuthenticated: req.isLoggedI
         });
     }).catch(err => console.log(err));
 }
@@ -43,7 +45,8 @@ exports.postEditProduct = (req, res, next) => {
         slug:slugify(title, {lower:true}),
         price,
         description,
-        imageUrl
+        imageUrl,
+        isAuthenticated: req.isLoggedI
     }).then(product => {  
         console.log('UPDATED PRODUCT!');
         res.redirect('/admin/products');
@@ -59,7 +62,8 @@ exports.getProducts = (req, res) => {
         res.render("admin/products", {
             pageTitle:"Admin Products", 
             path:"/admin/products",
-            products
+            products,
+            isAuthenticated: req.isLoggedI
         })
     }).catch(err => console.log(err));
 }

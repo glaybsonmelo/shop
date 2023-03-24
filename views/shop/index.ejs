@@ -4,7 +4,7 @@
 </head>
 
 <body>
-    <%- include("../includes/navigation")%>
+    <%- include("../includes/navigation", { isAuthenticated })%>
 
     <main>
         <% if(products.length > 0)  {%>
@@ -28,7 +28,7 @@
                 <%} %>
             </div>
         <%} else {%>
-                <h1>No Products Found!</h1>
+            <h1>No Products Found!</h1>
         <%}%>
     </main>
 <%- include("../includes/end") %>
