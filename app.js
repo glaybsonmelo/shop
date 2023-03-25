@@ -8,16 +8,17 @@ const authRoutes = require("./routes/auth");
 
 const errorController = require("./controllers/error");
 const User = require('./models/User');
+
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+
 require('dotenv').config();
 
 const store = new MongoDBStore({
   uri: process.env.MONGODB_URI,
   collection: 'sessions'
 });
-
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -33,21 +34,9 @@ app.use(session({
   store: store
 }));
 
-app.use((req, res, next) => {
-  User.findById('6419a1fdd207bec29d80866b').then(user => { 
-      req.user = user;
-      next();
-  }).catch(err => console.log(err));
-});
-
-
-console.log("debug: before session")
-
+app.use(authRoutes);
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
-app.use(authRoutes);
-console.log("debug: after session")
-
 
 // Middleware for 404
 app.use(errorController.get404);
