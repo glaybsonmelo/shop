@@ -1,4 +1,3 @@
-const { ObjectId } = require("mongodb");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 
@@ -45,7 +44,7 @@ exports.getProducts = (req, res) => {
 
 exports.getCart = (req, res, next) => {
   
-  req.session.user
+  req.user
   .populate("cart.items.productId", "title price")
   .then(user => {
     res.render('shop/cart', {
@@ -62,16 +61,14 @@ exports.postCart = (req, res) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
   .then(product => {
-    return req.session.user.addToCart(product);
-  })
-  .then(result => {
+    req.user.addToCart(product);
     res.redirect('/cart');
-  });
+  })
 };
 
 exports.postCartDeleteProduct = (req, res) => {
   const prodId = req.body.prodId;
-  req.session.user.removeFromCart(prodId)
+  req.user.removeFromCart(prodId)
   .then(() => {
     res.redirect("/cart");
   })
@@ -80,16 +77,8 @@ exports.postCartDeleteProduct = (req, res) => {
 
 exports.getOrders = (req, res) => {
 
-  // if (!req.session.user){
-  //   res.render("shop/orders", {
-  //     pageTitle:"Your Orders",
-  //     path:"/orders",
-  //     orders:[],
-  //     isAuthenticated: req.session.isLoggedIn
-  //   })
-  // }
   Order.find({
-    'user.userId': req.session.order._id
+    'user.userId': req.user._id
   }).then(orders => {
     res.render("shop/orders", {
       pageTitle:"Your Orders",
@@ -101,19 +90,19 @@ exports.getOrders = (req, res) => {
 }
 
 exports.postOrder = (req, res) => {
-  req.session.user.populate("cart.items.productId")
+  req.user.populate("cart.items.productId")
     .then(user => {
       const products = user.cart.items.map(item => {
         return { quantity: item.quantity, product: {...item.productId._doc } }
       })
       const newOrder = new Order({
         user: {
-          userId: req.session.user,
-          name: req.session.user.name
+          userId: req.user,
+          name: req.user.name
         },
         products
       })
-      req.session.user.clearCart();
+      req.user.clearCart();
       return newOrder.save()
     }).then(() => {
       res.redirect("/orders");

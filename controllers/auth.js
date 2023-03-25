@@ -1,5 +1,14 @@
 const User = require("../models/User");
 
+exports.auth = (req, res, next) => {
+    if (req.session.isLoggedIn){
+        next();
+    }
+    else{
+        res.redirect("/login");
+    }
+}
+
 exports.getLogin = (req, res) => {
     res.render("auth/login", {
         pageTitle: "Login",
@@ -10,6 +19,9 @@ exports.getLogin = (req, res) => {
 
 exports.postLogin = (req, res, next) => {
     const { email, password } = req.body;
+    if(password == "" || email == "" ){
+        res.redirect("/login");
+    }
     User.find({email}).then(([user]) => {
         if(password === user.password){
             req.session.user = user;

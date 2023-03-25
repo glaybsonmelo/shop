@@ -6,14 +6,14 @@ exports.getAddProduct = (req, res) => {
     res.render("admin/add-product",  {
         pageTitle:"Add Product",
         path:"/admin/add-product",
-        isAuthenticated: req.isLoggedI
+        isAuthenticated: req.isLoggedIn
     })
 }
 
 exports.postAddProduct = (req, res) => {
     const { title, imageUrl, price, description } = req.body;
     const product = new Product({title, slug:slugify(
-        title, {lower:true}), price, description, imageUrl, userId: req.session.user
+        title, {lower:true}), price, description, imageUrl, userId: req.user
     });
     product.save()
         .then(() => {
@@ -32,7 +32,7 @@ exports.getEditProduct = (req, res) => {
             pageTitle:"Edit Product",
             path:"/admin/products",
             product,
-            isAuthenticated: req.isLoggedI
+            isAuthenticated: req.isLoggedIn
         });
     }).catch(err => console.log(err));
 }
@@ -40,15 +40,14 @@ exports.getEditProduct = (req, res) => {
 exports.postEditProduct = (req, res, next) => {
     const {prodId, title, imageUrl, price, description} = req.body;
     
-    Product.findByIdAndUpdate({_id:prodId}, {
+    Product.findByIdAndUpdate({_id: prodId}, {
         title,
-        slug:slugify(title, {lower:true}),
+        slug:slugify(title, {lower: true}),
         price,
         description,
         imageUrl,
-        isAuthenticated: req.isLoggedI
+        isAuthenticated: req.isLoggedIn
     }).then(product => {  
-        console.log('UPDATED PRODUCT!');
         res.redirect('/admin/products');
     }).catch(err => console.log(err));
 
@@ -63,7 +62,7 @@ exports.getProducts = (req, res) => {
             pageTitle:"Admin Products", 
             path:"/admin/products",
             products,
-            isAuthenticated: req.isLoggedI
+            isAuthenticated: req.isLoggedIn
         })
     }).catch(err => console.log(err));
 }
