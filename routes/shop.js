@@ -9,7 +9,7 @@ router.get("/products/:slug", shopController.getProduct);
 
 router.get("/products", shopController.getProducts);
 
-router.get("/cart", shopController.getCart);
+router.get("/cart", auth, shopController.getCart);
 
 router.post("/cart", auth, shopController.postCart);
 

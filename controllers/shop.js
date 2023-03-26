@@ -1,7 +1,6 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 
-
 exports.getIndex = (req, res) => {
 
     Product.find().then(products => {

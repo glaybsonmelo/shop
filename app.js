@@ -57,26 +57,10 @@ app.use(errorController.get404);
 
 // Mongoose connection
 mongoose
-  .connect(
-    process.env.MONGODB_URI
-    )
+  .connect(process.env.MONGODB_URI)
   .then(async result => {
-    User.findById('6419a1fdd207bec29d80866b').then(user => {
-      if(!user){
-        const user = new User({
-          name: "Antonio Glaybson", 
-          email:"email@test.com", 
-          password: "123456",
-          cart: {
-            items: []
-          }
-        });
-        return user.save()
-      }
-    }).then(() => {
-      app.listen(3000, () => {
-        console.log("Server on 🚀")
-      });
+    app.listen(3000, () => {
+      console.log("Server on 🚀")
     });
   })
   .catch(err => {
