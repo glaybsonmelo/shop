@@ -1,15 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 
-
-exports.auth = (req, res, next) => {
-    if (req.session.isLoggedIn){
-        return next();
-    }
-    res.redirect("/login");
-
-}
-
 exports.getLogin = (req, res) => {
     res.render("auth/login", {
         pageTitle: "Login",
@@ -20,21 +11,25 @@ exports.getLogin = (req, res) => {
 
 exports.postLogin = (req, res, next) => {
     const { email, password } = req.body;
-    if(password == "" || email == "" ){
-        res.redirect("/login");
-    }
-    User.find({email}).then( async ([user]) => {
-        const result = await bcrypt.compare(password, user.password);
-        if(result){
-            req.session.user = user;
-            req.session.isLoggedIn = true;
-            // Garantir que só redicionarei apos a sessão for salva no db (evitar não carregamentos de dados no front)
-            return req.session.save(err => {
-                console.log(err);
-                res.redirect("/");
-            })
-        }else
+    User.findOne({email}).then(user => {
+        console.log(user)
+        if(!user){
+            return res.redirect("/login");
+        }
+        bcrypt.compare(password, user.password).then(doMatch => {
+            if(doMatch){
+                req.session.user = user;
+                req.session.isLoggedIn = true;
+                // Garantir que só redicionarei apos a sessão for salva no db (evitar não carregamentos de dados no front)
+                return req.session.save(err => {
+                    console.log(err);
+                    res.redirect("/");
+                });
+            }
+            res.redirect('/login')
+        }).catch(err => {
             res.redirect("/login");
+        });
     }).catch(err => console.log(err));
 };
 
@@ -54,15 +49,15 @@ exports.postSignup = (req, res) => {
         if(userDoc)
             return res.redirect("/signup");
 
-        return bcrypt.hash(password, 10);
+        bcrypt.hash(password, 10).then(hashedPassword => {
+            const newUser = new User({
+                name, email, password: hashedPassword, cart: { items:[] }
+            })
+            return newUser.save();
+        }).then(() => {
+            return res.redirect("/login");
+        });
    
-    }).then(hashedPassword => {
-        const newUser = new User({
-            name, email, password: hashedPassword, cart: { items:[] }
-        })
-        return newUser.save();
-    }).then(() => {
-        return res.redirect("/");
     }).catch(err => console.log(err));
 };
 

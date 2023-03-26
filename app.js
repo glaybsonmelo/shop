@@ -11,6 +11,7 @@ const User = require('./models/User');
 
 const mongoose = require('mongoose');
 const session = require('express-session');
+const isAuth = require('./middlewares/is-auth');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
 require('dotenv').config();
@@ -39,6 +40,7 @@ app.use((req, res, next) => {
   if (!req.session.user){
     return next();
   }
+  // session não pega os metodos, por isso esse codigo
   User.findById(req.session.user._id)
     .then(user => {
       req.user = user;
@@ -49,7 +51,7 @@ app.use((req, res, next) => {
 })
 
 app.use(authRoutes);
-app.use("/admin", adminRoutes);
+app.use("/admin", isAuth, adminRoutes);
 app.use(shopRoutes);
 
 // Middleware for 404
