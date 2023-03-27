@@ -17,7 +17,7 @@
                 <label for="password">Senha</label>
                 <input type="number" name="password" id="password" step="0.01">
             </div>
-
+            <input type="text" name="_csrf" id="csrfToken" hidden value="<%= csrfToken %>">
             <button class="btn" type="submit">Login</button>
         </form>
     </main>
