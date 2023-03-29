@@ -22,9 +22,7 @@ const store = new MongoDBStore({
   collection: 'sessions'
 });
 
-const csrfProtection = csrf({
-
-});
+const csrfProtection = csrf();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
