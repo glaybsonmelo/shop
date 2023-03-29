@@ -5,6 +5,7 @@ const csrf = require("csurf");
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const flash = require("connect-flash");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -22,9 +23,7 @@ const store = new MongoDBStore({
   collection: 'sessions'
 });
 
-const csrfProtection = csrf({
-
-});
+const csrfProtection = csrf();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -41,6 +40,7 @@ app.use(session({
 }));
 
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
 
