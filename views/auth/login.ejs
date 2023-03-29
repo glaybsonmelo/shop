@@ -8,14 +8,16 @@
 
     <main>
         <form class="login-form" action="/login" method="POST">
-
+            <% if (errorMessage) { %>
+            <div class="user-message message--error"><%= errorMessage %> </div>
+            <%}%>
             <div class="form-control">
                 <label for="email">E-mail</label>
                 <input type="email" name="email" id="email">
             </div>
             <div class="form-control">
                 <label for="password">Senha</label>
-                <input type="number" name="password" id="password" step="0.01">
+                <input type="password" name="password" id="password">
             </div>
             <input type="text" name="_csrf" id="csrfToken" hidden value="<%= csrfToken %>">
             <button class="btn" type="submit">Login</button>
