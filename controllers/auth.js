@@ -1,14 +1,8 @@
 const bcrypt = require("bcrypt");
 const sgMail = require("@sendgrid/mail");
-// const sendgridTransport = require("nodemailer-sendgrid-transport");
-
+const crypto = require("crypto");
 const User = require("../models/User");
 
-// const transporter = nodemailer.createTransport(sendgridTransport({
-//     auth: {
-//         api_key: process.env.SENDGRID_API_KEY
-//     }
-// }));
 sgMail.setApiKey('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');
 
 exports.getLogin = (req, res) => {
@@ -98,5 +92,27 @@ exports.postLogout = (req, res) => {
     req.session.destroy(err => {
         console.log(err);
         res.redirect("/");
+    });
+};
+
+exports.getReset = (req, res) => {
+    let message = req.flash("error");
+    message = message.length > 0 ? message[0] : undefined
+    res.render("auth/reset", {
+        pageTitle: "Reset Password",
+        path: "/reset",
+        errorMessage: undefined
+    });
+};
+
+exports.postReset = (req, res) => {
+    const { email } = req.body;
+    crypto.randomBytes(32, (err, buffer) => {
+        if(err) {
+            // req.flash("err", "");
+            console.log(err);
+            return res.redirect("/reset");
+        }
+        const token = buffer.toString('hex');
     });
 };
