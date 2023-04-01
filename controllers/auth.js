@@ -101,7 +101,7 @@ exports.getReset = (req, res) => {
     res.render("auth/reset", {
         pageTitle: "Reset Password",
         path: "/reset",
-        errorMessage: undefined
+        errorMessage: message
     });
 };
 
@@ -109,10 +109,35 @@ exports.postReset = (req, res) => {
     const { email } = req.body;
     crypto.randomBytes(32, (err, buffer) => {
         if(err) {
-            // req.flash("err", "");
             console.log(err);
             return res.redirect("/reset");
         }
         const token = buffer.toString('hex');
+        User.findOne({email})
+        .then(user => {
+            if(!user){
+                req.flash("error", "No account with that email found.");
+                return res.redirect("/reset");
+            }
+            user.resetToken= token;
+            user.resetTokenExpiration = 3600000; // 1 hour
+            return user.save();
+        }).then(() => {
+            res.redirect('/');
+
+            const msg = {
+                to: email,
+                from: "jazjsgxmrv@eurokool.com",
+                subject: "Password reset",
+                text:  `<p>You request a password reset</p>
+                        <p>Click this <a href="http://localhost/3000/reset/${token}">link </a> to set a new password.</p>`
+            }
+            sgMail.send(msg, (err, res) => {
+                if(err) {
+                    console.log(rr)
+                }
+                console.log("Success to",email);
+            });
+        }).catch(err => console.log(err));
     });
 };

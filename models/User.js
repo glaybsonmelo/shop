@@ -10,7 +10,7 @@ const userSchema = new Schema({
         require: true
     },
     resetToken: String,
-    
+    resetTokenExpiration: Date,
     password:{
         type: String,
         require: true
