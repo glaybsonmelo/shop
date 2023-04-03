@@ -65,7 +65,7 @@ app.use((req, res, next) => {
 })
 
 app.use(authRoutes);
-app.use("/admin", isAuth, adminRoutes);
+app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 // Middleware for 404

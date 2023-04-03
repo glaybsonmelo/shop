@@ -124,7 +124,6 @@ exports.postReset = (req, res) => {
             return user.save();
         }).then(() => {
             res.redirect('/');
-
             const msg = {
                 to: email,
                 from: "jazjsgxmrv@eurokool.com",
@@ -134,10 +133,51 @@ exports.postReset = (req, res) => {
             }
             sgMail.send(msg, (err, res) => {
                 if(err) {
-                    console.log(rr)
+                    console.log(err)
                 }
                 console.log("Success to",email);
             });
         }).catch(err => console.log(err));
     });
 };
+
+exports.getNewPassword = (req, res) => {
+    const token = req.params.token;
+    // resetTokenExpiration: {$gt: Date.now()}
+    User.findOne({resetToken: token})
+    .then(user => {
+        if(!user) return res.redirect("/login");
+
+        let message = req.flash("error");
+        message = message.length > 0 ? message[0] : undefined;
+        res.render("auth/new-password", {
+            pageTitle: "New password",
+            path: "/new-password",
+            errorMessage: message,
+            userId: user._id,
+            passwordToken: token
+        });
+    })
+    .catch(err => console.log(err));
+}
+
+exports.postNewPassword = (req, res) => {
+    const { password, userId, passwordToken } = req.body;
+    let resetUser;
+    User.findOne({_id: userId, resetToken: passwordToken, resetTokenExpiration: {$gt: Date.now()}})
+    .then(user => {
+        resetUser = user;
+        return bcrypt.hash(password, 12)
+
+
+    }).then(hashedPassword => {
+        resetUser.password = hashedPassword;
+        resetUser.resetToken = undefined;
+        resetUser.resetTokenExpiration = undefined;
+        return resetUser.save();
+    }).then(() => {
+        res.redirect("/login");
+    }).catch(err => console.log(err)).catch(err => {
+        console.log(err);
+    })
+}
