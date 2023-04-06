@@ -1,9 +1,14 @@
 const bcrypt = require("bcrypt");
 const sgMail = require("@sendgrid/mail");
 const crypto = require("crypto");
+const { validationResult } = require("express-validator");
+
 const User = require("../models/User");
 
-sgMail.setApiKey(process.env.SGMAIL_KEY);
+
+require('dotenv').config();
+
+sgMail.setApiKey(process.env.SGMAIL_API_KEY);
 
 exports.getLogin = (req, res) => {
     let message = req.flash('error');
@@ -54,7 +59,16 @@ exports.getSignup = (req, res) => {
 
 exports.postSignup = (req, res) => {
     const { name, email, password, confirmPassword } = req.body;
-
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        console.log(errors.array())
+        return res.status(422).render("auth/signup", {
+            pageTitle: "Sign Up",
+            path: "/signup",
+            isAuthenticated: req.session.user,
+            errorMessage: errors.array()[0].msg
+        })
+    }
     User.findOne({email})
     .then(userDoc => {
         if(userDoc){
@@ -71,7 +85,7 @@ exports.postSignup = (req, res) => {
             res.redirect("/login");
             const msg = {
                 to: "glaybsonrrr@gmail.com",
-                from: "jazjsgxmrv@eurokool.com",
+                from: "gleybsonmelo998@gmail.com",
                 subject: "Signup succeeded!",
                 text: "You successfully signed up!"
             } 
@@ -126,10 +140,10 @@ exports.postReset = (req, res) => {
             res.redirect('/');
             const msg = {
                 to: email,
-                from: "jazjsgxmrv@eurokool.com",
+                from: "gleybsonmelo998@gmail.com",
                 subject: "Password reset",
-                text:  `<p>You request a password reset</p>
-                        <p>Click this <a href="http://localhost/3000/reset/${token}">link </a> to set a new password.</p>`
+                html:  `<p>You request a password reset</p>
+                        <p>Click this  <a href="http://localhost:3000/reset/${token}">Link</a> to set a new password.</p>`
             }
             sgMail.send(msg, (err, res) => {
                 if(err) {

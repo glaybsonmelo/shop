@@ -15,7 +15,6 @@ const errorController = require("./controllers/error");
 const User = require('./models/User');
 const isAuth = require('./middlewares/is-auth');
 
-
 require('dotenv').config();
 
 const store = new MongoDBStore({
@@ -29,7 +28,7 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.static("public"));
 
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(session({
@@ -44,7 +43,7 @@ app.use(flash());
 
 app.use((req, res, next) => {
 
-  if (!req.session.user){
+  if (!req.session.user) {
     return next();
   }
   // session não pega os metodos, por isso esse codigo
@@ -60,7 +59,7 @@ app.use((req, res, next) => {
 // isso serve para não repetir em todas as rotas
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn,
-  res.locals.csrfToken = req.csrfToken();
+    res.locals.csrfToken = req.csrfToken();
   next();
 })
 
