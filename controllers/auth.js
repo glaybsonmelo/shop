@@ -5,7 +5,6 @@ const { validationResult } = require("express-validator");
 
 const User = require("../models/User");
 
-
 require('dotenv').config();
 
 sgMail.setApiKey(process.env.SGMAIL_API_KEY);
@@ -23,6 +22,15 @@ exports.getLogin = (req, res) => {
 
 exports.postLogin = (req, res, next) => {
     const { email, password } = req.body;
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.render("auth/login", {
+            pageTitle: "Login",
+            path: "/login",
+            isAuthenticated: req.session.user,
+            errorMessage: errors.array()[0].msg
+        })
+    }
     User.findOne({email}).then(user => {
         if(!user){
             req.flash("error", "Invalid email or password.");
@@ -58,10 +66,9 @@ exports.getSignup = (req, res) => {
 };
 
 exports.postSignup = (req, res) => {
-    const { name, email, password, confirmPassword } = req.body;
+    const { name, email, password } = req.body;
     const errors = validationResult(req);
     if(!errors.isEmpty()){
-        console.log(errors.array())
         return res.status(422).render("auth/signup", {
             pageTitle: "Sign Up",
             path: "/signup",
@@ -69,37 +76,28 @@ exports.postSignup = (req, res) => {
             errorMessage: errors.array()[0].msg
         })
     }
-    User.findOne({email})
-    .then(userDoc => {
-        if(userDoc){
-            req.flash("error", "E-mail exists alredy, please pick a different one");
-            return res.redirect("/signup");
-        }
 
-        bcrypt.hash(password, 10).then(hashedPassword => {
-            const newUser = new User({
-                name, email, password: hashedPassword, cart: { items:[] }
-            })
-            return newUser.save();
-        }).then(() => {
-            res.redirect("/login");
-            const msg = {
-                to: "glaybsonrrr@gmail.com",
-                from: "gleybsonmelo998@gmail.com",
-                subject: "Signup succeeded!",
-                text: "You successfully signed up!"
-            } 
-            sgMail.send(msg, (err, res) => {
-                if(err) {
-                    console.log(rr)
-                }
-                console.log("Success to",email);
-            });
-        }).catch(err => {
-            console.log(err);
+    return bcrypt.hash(password, 10).then(hashedPassword => {
+        const newUser = new User({
+            name, email, password: hashedPassword, cart: { items:[] }
+        })
+        return newUser.save();
+    }).then(() => {
+        res.redirect("/login");
+        const msg = {
+            to: email,
+            from: "gleybsonmelo998@gmail.com",
+            subject: "Signup succeeded!",
+            text: "You successfully signed up!"
+        } 
+        sgMail.send(msg, (err, res) => {
+            if(err) {
+                console.log(err)
+            }
         });
-   
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        console.log(err);
+    });
 };
 
 exports.postLogout = (req, res) => {
@@ -182,7 +180,6 @@ exports.postNewPassword = (req, res) => {
     .then(user => {
         resetUser = user;
         return bcrypt.hash(password, 12)
-
 
     }).then(hashedPassword => {
         resetUser.password = hashedPassword;
