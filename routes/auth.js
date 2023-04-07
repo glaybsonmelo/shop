@@ -11,9 +11,6 @@ router.post('/login', [
     body("password", "Password has to be valid.")
         .isLength({min: 5})
         .isAlphanumeric()
-        .custom((value, { req }) => {
-
-    })
 ], authController.postLogin);
 
 router.post('/logout', authController.postLogout);

@@ -19,15 +19,15 @@
             </div>
             <div class="form-control">
                 <label for="email">E-mail</label>
-                <input type="text" name="email" id="email" value="<%= oldInput.email %>">
+                <input class="<%= validationErrors.find(e => e.param == "email") ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInput.email %>">
             </div>
             <div class="form-control">
                 <label for="password">password</label>
-                <input type="text" name="password" id="password" value="<%= oldInput.password %>">
+                <input class="<%= validationErrors.find(e => e.param == "password") ? 'invalid' : '' %>" type="text" name="password" id="password" value="<%= oldInput.password %>">
             </div>
             <div class="form-control">
                 <label for="confirmPassword">Confirm password</label>
-                <input type="text" name="confirmPassword" id="confirmPassword" value="<%= oldInput.confirmPassword %>">
+                <input class="<%= validationErrors.find(e => e.param == "confirmPassword") ? 'invalid' : '' %>" type="text" name="confirmPassword" id="confirmPassword" value="<%= oldInput.confirmPassword %>">
             </div>
             <input type="text" name="_csrf" id="csrfToken" hidden value="<%= csrfToken %>">
             <button class="btn" type="submit">Signup</button>
