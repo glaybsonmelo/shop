@@ -13,19 +13,21 @@
             <% } %>
             <div class="form-control">
                 <label for="name">Name</label>
-                <input type="text" name="name" id="name" value="">
+
+                <input type="text" name="name" id="name" value="<%= oldInput.name %>">
+
             </div>
             <div class="form-control">
                 <label for="email">E-mail</label>
-                <input type="text" name="email" id="email">
+                <input type="text" name="email" id="email" value="<%= oldInput.email %>">
             </div>
             <div class="form-control">
                 <label for="password">password</label>
-                <input type="text" name="password" id="password">
+                <input type="text" name="password" id="password" value="<%= oldInput.password %>">
             </div>
             <div class="form-control">
                 <label for="confirmPassword">Confirm password</label>
-                <input type="text" name="confirmPassword" id="confirmPassword">
+                <input type="text" name="confirmPassword" id="confirmPassword" value="<%= oldInput.confirmPassword %>">
             </div>
             <input type="text" name="_csrf" id="csrfToken" hidden value="<%= csrfToken %>">
             <button class="btn" type="submit">Signup</button>

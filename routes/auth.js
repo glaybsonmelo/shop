@@ -22,17 +22,15 @@ router.get("/signup", authController.getSignup);
 
 router.post("/signup", [
     check("email")
-        .isEmail().custom((value, { req }) => {
-            User.findOne({email: value})
+        .isEmail().withMessage("Please enter a valid email.").custom((value, { req }) => {
+            return User.findOne({email: value})
             .then(userDoc => {
                 if(userDoc){
                     return Promise.reject("E-mail exists alredy, please pick a different one");
                     // throw new Error("error", "E-mail exists alredy, please pick a different one");
                 }
-                return res.redirect("/signup");
             })
-        })
-        .withMessage("Please enter a valid email."),
+        }),
     body("password", "Please enter a password only numbers and text and at least 5 characters.")
         .isLength({min: 6})
         .isAlphanumeric(),
