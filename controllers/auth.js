@@ -95,8 +95,8 @@ exports.postSignup = (req, res) => {
             errorMessage: errors.array()[0].msg,
             oldInput: { name, email, password, confirmPassword },
             validationErrors: errors.array()
-        })
-    }
+        });
+    };
 
     bcrypt.hash(password, 10).then(hashedPassword => {
         const newUser = new User({

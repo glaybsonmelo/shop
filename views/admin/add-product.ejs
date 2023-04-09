@@ -8,21 +8,24 @@
 
     <main>
         <form class="product-form" action="/admin/add-product" method="POST">
+            <% if (errorMessage) { %>
+                <div class="user-message message--error"><%= errorMessage %> </div>
+            <%}%>
             <div class="form-control">
                 <label for="title">Title</label>
-                <input type="text" name="title" id="title">
+                <input class="<%= validationErrors.find(e => e.param == 'title') ? 'invalid' : '' %>" type="text" name="title" id="title" value="<%= oldInput ? oldInput.title : '' %>">
             </div>
             <div class="form-control">
                 <label for="imageUrl">Image URL</label>
-                <input type="text" name="imageUrl" id="imageUrl">
+                <input class="<%= validationErrors.find(e => e.param == 'imageUrl') ? 'invalid' : '' %>" type="text" name="imageUrl" id="imageUrl" value="<%= oldInput ? oldInput.imageUrl : '' %>">
             </div>
             <div class="form-control">
                 <label for="price">Price</label>
-                <input type="number" name="price" id="price" step="0.01">
+                <input class="<%= validationErrors.find(e => e.param == 'price') ? 'invalid' : '' %>" type="number" name="price" id="price" step="0.01" value="<%= oldInput ? oldInput.price : '' %>">
             </div>
             <div class="form-control">
                 <label for="description">Description</label>
-                <textarea name="description" id="description" rows="5"></textarea>
+                <textarea class="<%= validationErrors.find(e => e.param == 'price') ? 'description' : '' %>" name="description" id="description" rows="5"><%= oldInput ? oldInput.title : '' %></textarea>
             </div>
             <input type="text" name="_csrf" id="csrfToken" hidden value="<%= csrfToken %>">
             <button class="btn" type="submit">Add Product</button>

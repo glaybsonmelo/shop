@@ -1,19 +1,47 @@
 const express = require("express");
 const router = express.Router();
+const { body } = require("express-validator");
 
 const adminController = require("../controllers/admin");
-const isAuth = require("../middlewares/is-auth");
 
-router.get("/add-product", isAuth, adminController.getAddProduct);
+router.get("/add-product", adminController.getAddProduct);
 
-router.post("/add-product", isAuth, adminController.postAddProduct);
+router.post("/add-product", [
+    body('title', "Please intert a title valid.")
+        .trim()
+        .isString()
+        .isLength({min: 3, max: 64}),
+    body('imageUrl', "Url is invalid.")
+        .trim()
+        .isURL(),
+    body('price')
+        .trim()
+        .isFloat(),
+    body('description')
+        .trim()
+        .isLength({min: 5, max: 5000})
+], adminController.postAddProduct);
 
-router.get("/edit-product/:id", isAuth, adminController.getEditProduct);
+router.get("/edit-product/:id", adminController.getEditProduct);
 
-router.post("/edit-product", isAuth, adminController.postEditProduct);
+router.post("/edit-product",  [
+    body('title', "Please intert a title valid.")
+        .trim()
+        .isString()
+        .isLength({min: 3, max: 64}),
+    body('imageUrl', "Url is invalid.")
+        .trim()
+        .isURL(),
+    body('price')
+        .trim()
+        .isFloat(),
+    body('description', "Please enter a description of at least 5 characters.")
+        .trim()
+        .isLength({min: 5, max: 5000})
+], adminController.postEditProduct);
 
-router.post("/delete-product", isAuth,  adminController.postDeleteProduct);
+router.post("/delete-product", adminController.postDeleteProduct);
 
-router.get("/products", isAuth, adminController.getProducts);
+router.get("/products", adminController.getProducts);
 
 module.exports = router;

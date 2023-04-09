@@ -1,16 +1,32 @@
 const slugify = require("slugify");
+const { validationResult } = require("express-validator");
 const Product = require("../models/Product");
-
 
 exports.getAddProduct = (req, res) => {
     res.render("admin/add-product",  {
         pageTitle:"Add Product",
-        path:"/admin/add-product"
+        path:"/admin/add-product",
+        validationErrors: [],
+        errorMessage: null,
+        oldInput: null
     })
 }
 
 exports.postAddProduct = (req, res) => {
+    const errors = validationResult(req);
     const { title, imageUrl, price, description } = req.body;
+    console.log(errors.array())
+    if(!errors.isEmpty()){
+        return res.status(422).render("admin/add-product",  {
+            pageTitle:"Add Product",
+            path:"/admin/add-product",
+            oldInput: {
+                title, imageUrl, price, description
+            },
+            validationErrors: errors.array(),
+            errorMessage: errors.array()[0].msg
+        })
+    }
     const product = new Product({title, slug:slugify(
         title, {lower:true}), price, description, imageUrl, userId: req.user
     });
@@ -30,16 +46,28 @@ exports.getEditProduct = (req, res) => {
         res.render("admin/edit-product",{
             pageTitle:"Edit Product",
             path:"/admin/products",
-            product
+            product,
+            errorMessage: null,
+            validationErrors: []
         });
     }).catch(err => console.log(err));
 }
 
 exports.postEditProduct = (req, res, next) => {
     const {prodId, title, imageUrl, price, description} = req.body;
-    
-    Product.findOne({_id: prodId})
-    .then(product => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.render("admin/edit-product",{
+            pageTitle:"Edit Product",
+            path:"/admin/products",
+            // old input
+            product: {_id: prodId, title, imageUrl, price, description},
+            errorMessage: errors.array()[0].msg,
+            validationErrors: errors.array()
+        });
+    }
+    Product.findOne({_id: prodId}).then(product => {
+
         if (product.userId.toString() !== req.user._id.toString()){
             return res.redirect("/");
         }
