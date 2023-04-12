@@ -41,21 +41,6 @@ app.use(session({
 app.use(csrfProtection);
 app.use(flash());
 
-app.use((req, res, next) => {
-
-  if (!req.session.user) {
-    return next();
-  }
-  // session não pega os metodos, por isso esse codigo
-  User.findById(req.session.user._id)
-    .then(user => {
-      req.user = user;
-      next();
-    }).catch(err => {
-      console.log(err);
-    })
-})
-
 // isso serve para não repetir em todas as rotas
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn,
@@ -63,13 +48,40 @@ app.use((req, res, next) => {
   next();
 })
 
+app.use((req, res, next) => {
+
+  if (!req.session.user) {
+    return next();
+  }
+  // req.user.session não pega os metodos, por isso esse codigo
+  User.findById(req.session.user._id)
+    .then(user => {
+      if(!user){
+        return next();
+      }
+      req.user = user;
+      next();
+    }).catch(err => {
+      next(new Error(err));
+    })
+})
+
+
 app.use(authRoutes);
 app.use("/admin", isAuth, adminRoutes);
 app.use(shopRoutes);
 
-// Middleware for 404
+app.use(errorController.get500);
+
 app.use(errorController.get404);
 
+app.use((error, req, res, next) => {
+  res.status(500).render("500", {
+    pageTitle:"Internal server error",
+    path:"/500",
+    isAuthenticated: req.isLoggedIn
+});
+});
 // Mongoose connection
 mongoose
   .connect(process.env.MONGODB_URI)

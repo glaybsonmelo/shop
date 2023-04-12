@@ -12,7 +12,7 @@ exports.getAddProduct = (req, res) => {
     })
 }
 
-exports.postAddProduct = (req, res) => {
+exports.postAddProduct = (req, res, next) => {
     const errors = validationResult(req);
     const { title, imageUrl, price, description } = req.body;
     console.log(errors.array())
@@ -34,10 +34,23 @@ exports.postAddProduct = (req, res) => {
         .then(() => {
             res.redirect('/');
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            // return res.status(500).render("admin/add-product",  {
+            //     pageTitle:"Add Product",
+            //     path:"/admin/add-product",
+            //     oldInput: {
+            //         title, imageUrl, price, description
+            //     },
+            //     validationErrors: [],
+            //     errorMessage: "Database operation failed, please try again."
+            // })
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
 }
 
-exports.getEditProduct = (req, res) => {
+exports.getEditProduct = (req, res, next) => {
     const productId = req.params.id;
     Product.findById(productId).then(product => {
         if(!product) {
@@ -50,7 +63,11 @@ exports.getEditProduct = (req, res) => {
             errorMessage: null,
             validationErrors: []
         });
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
 }
 
 exports.postEditProduct = (req, res, next) => {
@@ -79,11 +96,15 @@ exports.postEditProduct = (req, res, next) => {
         product.save().then(() => {
             res.redirect('/admin/products');
         });
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
 
   };
 
-exports.getProducts = (req, res) => {
+exports.getProducts = (req, res, next) => {
     Product.find({userId: req.user._id})
     .select("title price imageUrl _id")
     .populate("userId", "name")
@@ -93,14 +114,22 @@ exports.getProducts = (req, res) => {
             path:"/admin/products",
             products
         })
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
 }
 
-exports.postDeleteProduct = (req, res) => {
+exports.postDeleteProduct = (req, res, next) => {
     const productId = req.body.productId;
     Product.deleteOne({ _id: productId, userId: req.user._id })
     .then(() => {
         res.redirect("/admin/products");
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
 }

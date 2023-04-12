@@ -68,7 +68,11 @@ exports.postLogin = (req, res, next) => {
         }).catch(err => {
             res.redirect("/login");
         });
-    }).catch(err => console.log(err));
+    }).catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
 };
 
 exports.getSignup = (req, res) => {
@@ -84,7 +88,7 @@ exports.getSignup = (req, res) => {
     });
 };
 
-exports.postSignup = (req, res) => {
+exports.postSignup = (req, res, next) => {
     const { name, email, password, confirmPassword } = req.body;
     const errors = validationResult(req);
     if(!errors.isEmpty()){
@@ -117,7 +121,9 @@ exports.postSignup = (req, res) => {
             }
         });
     }).catch(err => {
-        console.log(err);
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
     });
 };
 
@@ -138,7 +144,7 @@ exports.getReset = (req, res) => {
     });
 };
 
-exports.postReset = (req, res) => {
+exports.postReset = (req, res, next) => {
     const { email } = req.body;
     crypto.randomBytes(32, (err, buffer) => {
         if(err) {
@@ -170,11 +176,15 @@ exports.postReset = (req, res) => {
                 }
                 console.log("Success to",email);
             });
-        }).catch(err => console.log(err));
+        }).catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
     });
 };
 
-exports.getNewPassword = (req, res) => {
+exports.getNewPassword = (req, res, next) => {
     const token = req.params.token;
     // resetTokenExpiration: {$gt: Date.now()}
     User.findOne({resetToken: token})
@@ -191,10 +201,14 @@ exports.getNewPassword = (req, res) => {
             passwordToken: token
         });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
 }
 
-exports.postNewPassword = (req, res) => {
+exports.postNewPassword = (req, res, next) => {
     const { password, userId, passwordToken } = req.body;
     let resetUser;
     User.findOne({_id: userId, resetToken: passwordToken, resetTokenExpiration: {$gt: Date.now()}})
@@ -209,7 +223,9 @@ exports.postNewPassword = (req, res) => {
         return resetUser.save();
     }).then(() => {
         res.redirect("/login");
-    }).catch(err => console.log(err)).catch(err => {
-        console.log(err);
-    })
+    }).catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+    });
 }
