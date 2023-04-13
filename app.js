@@ -66,22 +66,13 @@ app.use((req, res, next) => {
     })
 })
 
-
 app.use(authRoutes);
 app.use("/admin", isAuth, adminRoutes);
 app.use(shopRoutes);
 
+app.use(errorController.get404);
 app.use(errorController.get500);
 
-app.use(errorController.get404);
-
-app.use((error, req, res, next) => {
-  res.status(500).render("500", {
-    pageTitle:"Internal server error",
-    path:"/500",
-    isAuthenticated: req.isLoggedIn
-});
-});
 // Mongoose connection
 mongoose
   .connect(process.env.MONGODB_URI)

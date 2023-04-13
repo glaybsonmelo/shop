@@ -14,7 +14,8 @@ exports.getAddProduct = (req, res) => {
 
 exports.postAddProduct = (req, res, next) => {
     const errors = validationResult(req);
-    const { title, imageUrl, price, description } = req.body;
+    const { title, price, description } = req.body;
+    const imageUrl = req.body.image;
     console.log(errors.array())
     if(!errors.isEmpty()){
         return res.status(422).render("admin/add-product",  {
@@ -35,15 +36,6 @@ exports.postAddProduct = (req, res, next) => {
             res.redirect('/');
         })
         .catch(err => {
-            // return res.status(500).render("admin/add-product",  {
-            //     pageTitle:"Add Product",
-            //     path:"/admin/add-product",
-            //     oldInput: {
-            //         title, imageUrl, price, description
-            //     },
-            //     validationErrors: [],
-            //     errorMessage: "Database operation failed, please try again."
-            // })
             const error = new Error(err);
             error.httpStatusCode = 500;
             return next(error);
