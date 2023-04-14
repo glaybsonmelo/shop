@@ -7,7 +7,7 @@
    <%- include('../includes/navigation.ejs') %>
 
     <main>
-        <form class="product-form" action="/admin/edit-product" method="POST">
+        <form class="product-form" action="/admin/edit-product" method="POST" enctype="multipart/form-data">
             <% if (errorMessage) { %>
                 <div class="user-message message--error"><%= errorMessage %> </div>
             <%}%>
@@ -18,7 +18,7 @@
             </div>
             <div class="form-control">
                 <label for="imageUrl">Image URL</label>
-                <input class="<%= validationErrors.find(e => e.param == 'imageUrl') ? 'invalid' : '' %>" type="text" name="imageUrl" id="imageUrl" value="<%= product.imageUrl %>" >
+                <input type="file" name="image" id="image">
             </div>
             <div class="form-control">
                 <label for="price">Price</label>

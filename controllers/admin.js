@@ -13,21 +13,34 @@ exports.getAddProduct = (req, res) => {
 }
 
 exports.postAddProduct = (req, res, next) => {
+
     const errors = validationResult(req);
     const { title, price, description } = req.body;
-    const imageUrl = req.file;
-    console.log(imageUrl)
+    const image = req.file;
+    console.log(image)
+    if(!image){
+        return res.status(422).render("admin/add-product",  {
+            pageTitle:"Add Product",
+            path:"/admin/add-product",
+            oldInput: {
+                title, price, description
+            },
+            validationErrors: [],
+            errorMessage: 'Attached file is not an image.'
+        })       
+    }
     if(!errors.isEmpty()){
         return res.status(422).render("admin/add-product",  {
             pageTitle:"Add Product",
             path:"/admin/add-product",
             oldInput: {
-                title, imageUrl, price, description
+                title, price, description
             },
             validationErrors: errors.array(),
             errorMessage: errors.array()[0].msg
         })
     }
+    const imageUrl = image.path;
     const product = new Product({title, slug:slugify(
         title, {lower:true}), price, description, imageUrl, userId: req.user
     });
@@ -63,14 +76,15 @@ exports.getEditProduct = (req, res, next) => {
 }
 
 exports.postEditProduct = (req, res, next) => {
-    const {prodId, title, imageUrl, price, description} = req.body;
+    const { prodId, title, price, description } = req.body;
+    const image = req.file;
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.render("admin/edit-product",{
             pageTitle:"Edit Product",
             path:"/admin/products",
             // old input
-            product: {_id: prodId, title, imageUrl, price, description},
+            product: {_id: prodId, title, price, description},
             errorMessage: errors.array()[0].msg,
             validationErrors: errors.array()
         });
@@ -83,8 +97,10 @@ exports.postEditProduct = (req, res, next) => {
         product.title = title,
         product.slug = slugify(title, {lower: true}),
         product.price = price,
-        product.description = description,
-        product.imageUrl = imageUrl
+        product.description = description
+        if(image){
+            product.imageUrl = image.path
+        }
         product.save().then(() => {
             res.redirect('/admin/products');
         });

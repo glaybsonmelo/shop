@@ -11,8 +11,13 @@ router.post("/add-product", [
         .trim()
         .isString()
         .isLength({min: 3, max: 64}),
-    body('imageUrl', "Url is invalid.")
-        .trim(),
+    // file('image')
+    //     .custom((imageFile, { req }) => {
+    //         if(imageFile == undefined)
+    //             throw new Error("Attached file is not an image.");
+    //         return true;
+    //     })
+    //     .trim(),
     body('price')
         .trim()
         .isFloat(),
@@ -28,9 +33,9 @@ router.post("/edit-product",  [
         .trim()
         .isString()
         .isLength({min: 3, max: 64}),
-    body('imageUrl', "Url is invalid.")
-        .trim()
-        .isURL(),
+    // body('imageUrl', "Url is invalid.")
+    //     .trim()
+    //     .isURL(),
     body('price')
         .trim()
         .isFloat(),
