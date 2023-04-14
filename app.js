@@ -6,7 +6,8 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const flash = require("connect-flash");
-
+const multer = require("multer");
+const path = require("path")
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
@@ -24,13 +25,21 @@ const store = new MongoDBStore({
 
 const csrfProtection = csrf();
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'images')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.filename + "-" + file.originalname)
+  }
+})
+
 app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.static("public"));
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
+app.use(multer({dest: 'images', storage: fileStorage}).single('image'));
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,

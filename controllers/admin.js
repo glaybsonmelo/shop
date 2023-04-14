@@ -15,8 +15,8 @@ exports.getAddProduct = (req, res) => {
 exports.postAddProduct = (req, res, next) => {
     const errors = validationResult(req);
     const { title, price, description } = req.body;
-    const imageUrl = req.body.image;
-    console.log(errors.array())
+    const imageUrl = req.file;
+    console.log(imageUrl)
     if(!errors.isEmpty()){
         return res.status(422).render("admin/add-product",  {
             pageTitle:"Add Product",

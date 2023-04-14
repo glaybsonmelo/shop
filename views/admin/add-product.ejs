@@ -7,7 +7,7 @@
    <%- include('../includes/navigation.ejs') %>
 
     <main>
-        <form class="product-form" action="/admin/add-product" method="POST">
+        <form class="product-form" action="/admin/add-product" method="POST" enctype="multipart/form-data">
             <% if (errorMessage) { %>
                 <div class="user-message message--error"><%= errorMessage %> </div>
             <%}%>
