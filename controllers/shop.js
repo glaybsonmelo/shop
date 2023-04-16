@@ -6,19 +6,36 @@ const PDFDocument = require("pdfkit");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 
-exports.getIndex = (req, res, next) => {
 
-    Product.find().then(products => {
-        res.render("shop/index", {
-            products,
-            pageTitle:"Products",
-            path:"/"            
-        })
-    }).catch(err => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
-  });
+const ITEMS_PER_PAGE = 1;
+
+exports.getIndex = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalItems = 0;
+  Product.countDocuments({})
+    .then(numProducts => {
+      totalItems = numProducts;
+      return Product.find()
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE)
+    })
+  .then(products => {
+      res.render("shop/product-list", {
+          products,
+          pageTitle:"Products",
+          path:"/",
+          currentPage: page,
+          hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+          hasPreviusPage: page > 1,
+          nextPage: page + 1,
+          previusPage: page - 1,
+          lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+      })
+  }).catch(err => {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
+});
 };
 
 exports.getProduct = (req, res, next) => {
@@ -37,13 +54,33 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res) => {
-    Product.find().then(products => {
-      res.render("shop/product-list", {
-        products,
-        pageTitle:"Products",
-        path:"/products"
-      });
-    })
+
+    const page = +req.query.page || 1;
+    let totalItems = 0;
+    Product.countDocuments({})
+      .then(numProducts => {
+        totalItems = numProducts;
+        return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE)
+      })
+    .then(products => {
+        res.render("shop/product-list", {
+            products,
+            pageTitle:"Products",
+            path:"/products",
+            currentPage: page,
+            hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+            hasPreviusPage: page > 1,
+            nextPage: page + 1,
+            previusPage: page - 1,
+            lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+        })
+    }).catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+  });
 };
 
 
