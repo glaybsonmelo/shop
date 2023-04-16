@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const PDFDocument = require("pdfkit");
+
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 
@@ -141,19 +143,39 @@ exports.getInvoice = (req, res, next) => {
     if(order.user.userId.toString() !== req.user._id.toString()){
       return next(new Error("Unauthorized"));
     }
+
+    const invoiceName = 'invoice-' + orderId + ".pdf";
+    const invoicePath = path.join('data', 'invoices', invoiceName);
+  
+    const pdfDoc = new PDFDocument();
+    const writeStream = fs.createWriteStream(invoicePath);
+    pdfDoc.pipe(writeStream);
+    pdfDoc.fontSize(26).text("Invoice", {
+      underline: true
+    });
+    pdfDoc.text("-------------------------");
+    let totalPrice = 0;
+    order.products.forEach(prod => {
+      pdfDoc.fontSize(14).text(`${prod.product.title} - ${prod.quantity}x $${prod.product.price}`);
+      totalPrice += prod.product.price * prod.quantity;
+    });
+    pdfDoc.text("-------------------------");
+    pdfDoc.fontSize(20).text(`Total: $${totalPrice}`);
+    pdfDoc.end();
+    
+    writeStream.on('finish', () => {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader(
+        'Content-Disposition',
+        'inline; filename="' + invoiceName + '"'
+      );
+      const readStream = fs.createReadStream(invoicePath);
+      readStream.pipe(res);
+    });
+
   }).catch(err => {
     const error = new Error(err);
     error.httpStatusCode = 500;
     return next(error);
   });
-  const invoiceName = 'invoice-' + orderId + ".pdf";
-  
-  const invoicePath = path.join('data', 'invoices', invoiceName);
-  const file = fs.createReadStream(invoicePath);
-  res.setHeader('Content-Type', 'application/pdf')
-  res.setHeader(
-    'Content-Disposition',
-    'inline; filename="' + invoiceName + '"'
-    )
-  file.pipe(res);
-}
+};

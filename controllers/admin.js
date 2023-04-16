@@ -1,5 +1,7 @@
 const slugify = require("slugify");
 const { validationResult } = require("express-validator");
+const fileHelper = require("../utils/file");
+
 const Product = require("../models/Product");
 
 exports.getAddProduct = (req, res) => {
@@ -99,7 +101,8 @@ exports.postEditProduct = (req, res, next) => {
         product.price = price,
         product.description = description
         if(image){
-            product.imageUrl = image.path
+            fileHelper.deleteFile(product.imageUrl);
+            product.imageUrl = image.path;
         }
         product.save().then(() => {
             res.redirect('/admin/products');
@@ -131,8 +134,13 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const productId = req.body.productId;
-    Product.deleteOne({ _id: productId, userId: req.user._id })
-    .then(() => {
+    Product.findById(productId).then(product => {
+        if(!product) {
+            return next(new Error("Product not found."))
+        }
+        fileHelper.deleteFile(product.imageUrl);
+        return Product.deleteOne({ _id: productId, userId: req.user._id })
+    }).then(() => {
         res.redirect("/admin/products");
     })
     .catch(err => {
@@ -140,4 +148,5 @@ exports.postDeleteProduct = (req, res, next) => {
         error.httpStatusCode = 500;
         return next(error);
     });
+    
 }
