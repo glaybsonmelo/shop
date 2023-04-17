@@ -44,7 +44,7 @@ router.post("/edit-product",  [
         .isLength({min: 5, max: 5000})
 ], adminController.postEditProduct);
 
-router.post("/delete-product", adminController.postDeleteProduct);
+router.delete("/product/:productId", adminController.deleteProduct);
 
 router.get("/products", adminController.getProducts);
 
