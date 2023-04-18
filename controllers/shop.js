@@ -1,7 +1,8 @@
 const fs = require("fs");
 const path = require("path");
-
+require('dotenv').config();
 const PDFDocument = require("pdfkit");
+const stripe = require("stripe")(process.env.STRIPE_PAYMENT_API_KEY);
 
 const Order = require("../models/Order");
 const Product = require("../models/Product");
@@ -99,7 +100,7 @@ exports.getCart = (req, res, next) => {
     const error = new Error(err);
     error.httpStatusCode = 500;
     return next(error);
-});
+  });
 }
 
 exports.postCart = (req, res, next) => {
@@ -145,7 +146,55 @@ exports.getOrders = (req, res, next) => {
 });
 }
 
-exports.postOrder = (req, res, next) => {
+exports.getCheckout = (req, res, next) => {
+
+  let products;
+  let totalPrice = 0;
+  req.user
+  .populate("cart.items.productId", "title price")
+  .then(user => {
+    products = user.cart.items;
+
+    products.forEach(p => {
+      totalPrice += p.quantity * p.productId.price;
+    });
+
+    return stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: products.map(p => {
+        return {
+          price_data: {
+            currency: 'usd',
+            unit_amount: p.productId.price * 100,
+            product_data: {
+              name: p.productId.title,
+              description: p.productId.description,
+            },
+          },
+          quantity: p.quantity
+        }
+      }),
+      success_url: req.protocol + '://' + req.get('host') + '/checkout/success',
+      cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel',
+    });
+  }).then(session => {
+    res.render('shop/checkout', {
+      path: '/checkout',
+      pageTitle: 'Checkout',
+      products,
+      totalPrice,
+      sessionId: session.id
+    });
+  })
+  .catch(err => {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
+  });
+};
+
+exports.getCheckoutSucess = (req, res, next) => {
   req.user.populate("cart.items.productId")
     .then(user => {
       const products = user.cart.items.map(item => {
