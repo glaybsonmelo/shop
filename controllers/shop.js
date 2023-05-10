@@ -7,7 +7,6 @@ const stripe = require("stripe")(process.env.STRIPE_PAYMENT_API_KEY);
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 
-
 const ITEMS_PER_PAGE = 1;
 
 exports.getIndex = (req, res, next) => {

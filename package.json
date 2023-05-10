@@ -15,6 +15,7 @@
     "brace-expansion": "^1.1.11",
     "braces": "^3.0.2",
     "chokidar": "^3.5.3",
+    "compression": "^1.7.4",
     "concat-map": "^0.0.1",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^3.1.1",
@@ -28,6 +29,7 @@
     "fill-range": "^7.0.1",
     "glob-parent": "^5.1.2",
     "has-flag": "^3.0.0",
+    "helmet": "^7.0.0",
     "ignore-by-default": "^1.0.1",
     "is-binary-path": "^2.1.0",
     "is-extglob": "^2.1.1",
@@ -61,7 +63,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "start:dev": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",

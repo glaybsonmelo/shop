@@ -203,15 +203,18 @@ exports.getNewPassword = (req, res, next) => {
     })
     .catch(err => {
         const error = new Error(err);
+        console.log(error)
         error.httpStatusCode = 500;
         return next(error);
     });
 }
 
 exports.postNewPassword = (req, res, next) => {
-    const { password, userId, passwordToken } = req.body;
+    const { password, userId, token } = req.body;
+
     let resetUser;
-    User.findOne({_id: userId, resetToken: passwordToken, resetTokenExpiration: {$gt: Date.now()}})
+    //resetTokenExpiration: {$gt: Date.now()}
+    User.findOne({_id: userId, resetToken: token})
     .then(user => {
         resetUser = user;
         return bcrypt.hash(password, 12)
@@ -224,6 +227,8 @@ exports.postNewPassword = (req, res, next) => {
     }).then(() => {
         res.redirect("/login");
     }).catch(err => {
+        console.log(err)
+
         const error = new Error(err);
         error.httpStatusCode = 500;
         return next(error);

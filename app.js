@@ -7,6 +7,9 @@ const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require("helmet");
+const compression = require("compression")
+
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
@@ -15,7 +18,7 @@ const errorController = require("./controllers/error");
 const User = require('./models/User');
 const isAuth = require('./middlewares/is-auth');
 
-require('dotenv').config();
+// require('dotenv').config();
 
 const store = new MongoDBStore({
   uri: process.env.MONGODB_URI,
@@ -44,6 +47,9 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 app.use(express.static("public"));
 app.use("/images", express.static("images"));
+
+app.use(helmet());
+app.use(compression());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({dest: 'images', storage: fileStorage, fileFilter: fileFilterr}).single('image'));
@@ -88,14 +94,11 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 app.use(errorController.get500);
-
-// Mongoose connection
+console.log(process.env.PORT)
 mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(async result => {
-    app.listen(3000, () => {
-      console.log("Server on 🚀")
-    });
+  .connect(`mongodb+srv://gleybsonmelo998:o22H8L1v8OSqcdgL@cluster0.hu8nwbh.mongodb.net/shop`)
+  .then(result => {
+    app.listen(process.env.PORT || 3000);
   })
   .catch(err => {
     console.log(err);
