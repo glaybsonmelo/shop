@@ -9,6 +9,10 @@ const flash = require("connect-flash");
 const multer = require("multer");
 const helmet = require("helmet");
 const compression = require("compression")
+const morgan = require("morgan");
+const fs = require("fs");
+const path = require("path");
+const https = require("https");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -26,6 +30,9 @@ const store = new MongoDBStore({
 });
 
 const csrfProtection = csrf();
+
+const privateKey = fs.readFileSync("server.key");
+const certificate = fs.readFileSync("server.cert");
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -48,8 +55,11 @@ app.set("views", "views");
 app.use(express.static("public"));
 app.use("/images", express.static("images"));
 
+const acessLogStream = fs.createWriteStream(path.join(__dirname, 'acess.log'), { flags: 'a' });
+
 app.use(helmet());
 app.use(compression());
+app.use(morgan('combined', { stream: acessLogStream }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({dest: 'images', storage: fileStorage, fileFilter: fileFilterr}).single('image'));
@@ -98,6 +108,7 @@ console.log(process.env.PORT)
 mongoose
   .connect(`mongodb+srv://gleybsonmelo998:o22H8L1v8OSqcdgL@cluster0.hu8nwbh.mongodb.net/shop`)
   .then(result => {
+    // https.createServer({ key: privateKey, cert: certificate }, app).listen(3000);
     app.listen(process.env.PORT || 3000);
   })
   .catch(err => {
