@@ -22,7 +22,7 @@ const errorController = require("./controllers/error");
 const User = require('./models/User');
 const isAuth = require('./middlewares/is-auth');
 
-// require('dotenv').config();
+require('dotenv').config();
 
 const store = new MongoDBStore({
   uri: process.env.MONGODB_URI,
