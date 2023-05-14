@@ -9,6 +9,7 @@ const flash = require("connect-flash");
 const multer = require("multer");
 const helmet = require("helmet");
 const compression = require("compression")
+const crypto = require("crypto");
 // const morgan = require("morgan");
 // const fs = require("fs");
 // const path = require("path");
@@ -60,11 +61,15 @@ app.use(
   helmet.contentSecurityPolicy({
       useDefaults: true,
       directives: {
-          "img-src": ["'self'", "https: data:"],
-          "script-src": ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://maxcdn.bootstrapcdn.com", "https://cdn.jsdelivr.net"],
-      }
+          'default-src': ["'self'"],
+          'script-src': ["'self'", "'unsafe-inline'", 'js.stripe.com'],
+          'style-src': ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+          'frame-src': ["'self'", 'js.stripe.com'],
+          'font-src': ["'self'", 'fonts.googleapis.com', 'fonts.gstatic.com'],
+        },
+        nonce: crypto.randomBytes(16).toString('base64'),
   })
-);
+)
 app.use(compression());
 // app.use(morgan('combined', { stream: acessLogStream }));
 
