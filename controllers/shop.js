@@ -7,7 +7,7 @@ const stripe = require("stripe")(process.env.STRIPE_PAYMENT_API_KEY);
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 5;
 
 exports.getIndex = (req, res, next) => {
   const page = +req.query.page || 1;
@@ -33,6 +33,8 @@ exports.getIndex = (req, res, next) => {
       })
   }).catch(err => {
     const error = new Error(err);
+    console.log(err);
+
     error.httpStatusCode = 500;
     return next(error);
 });
@@ -47,6 +49,7 @@ exports.getProduct = (req, res, next) => {
             product:product
         });
     }).catch(err => {
+      console.log(err);
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
@@ -96,6 +99,7 @@ exports.getCart = (req, res, next) => {
     });
   })
   .catch(err => {
+
     const error = new Error(err);
     error.httpStatusCode = 500;
     return next(error);
@@ -109,6 +113,8 @@ exports.postCart = (req, res, next) => {
     req.user.addToCart(product);
     res.redirect('/cart');
   }).catch(err => {
+    console.log(err);
+  
     const error = new Error(err);
     error.httpStatusCode = 500;
     return next(error);
@@ -140,6 +146,8 @@ exports.getOrders = (req, res, next) => {
     })
   }).catch(err => {
     const error = new Error(err);
+    console.log(err);
+
     error.httpStatusCode = 500;
     return next(error);
 });
@@ -187,6 +195,8 @@ exports.getCheckout = (req, res, next) => {
     });
   })
   .catch(err => {
+    console.log(err);
+
     const error = new Error(err);
     error.httpStatusCode = 500;
     return next(error);
@@ -213,6 +223,8 @@ exports.getCheckoutSucess = (req, res, next) => {
       res.redirect("/orders");
     })
     .catch(err => {
+      console.log(err);
+
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
@@ -231,7 +243,7 @@ exports.getInvoice = (req, res, next) => {
 
     const invoiceName = 'invoice-' + orderId + ".pdf";
     const invoicePath = path.join('data', 'invoices', invoiceName);
-  
+
     const pdfDoc = new PDFDocument();
     const writeStream = fs.createWriteStream(invoicePath);
     pdfDoc.pipe(writeStream);
@@ -247,7 +259,7 @@ exports.getInvoice = (req, res, next) => {
     pdfDoc.text("-------------------------");
     pdfDoc.fontSize(20).text(`Total: $${totalPrice}`);
     pdfDoc.end();
-    
+
     writeStream.on('finish', () => {
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader(
@@ -259,6 +271,7 @@ exports.getInvoice = (req, res, next) => {
     });
 
   }).catch(err => {
+    console.log(err);
     const error = new Error(err);
     error.httpStatusCode = 500;
     return next(error);

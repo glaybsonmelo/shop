@@ -133,6 +133,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.deleteProduct = (req, res, next) => {
     const productId = req.params.productId;
+    console.log(productId);
     Product.findById(productId).then(product => {
         if(!product) {
             return next(new Error("Product not found."))

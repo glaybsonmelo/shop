@@ -31,14 +31,16 @@
                                         <input type="hidden" name="productId" value="<%= product._id %>">
                                         <input type="text" name="_csrf" id="csrfToken" hidden value="<%= csrfToken %>">
                                         <button class="btn" onclick="deleteProduct(this)" type="button">Delete</button>
-                                   
+
+                                        <!-- <button class="btn delete-product-btn" type="button" data-product-id="<%= product._id %>">Delete</button> -->
+
                                 </div>
                             </article>
                             <% } %>
                     </div>
                     <% } else { %>
-                        <h1>No Products Found!</h1>
+                        <h1>Nenhum Produto Encontrado!</h1>
                         <% } %>
             </main>
-            <script src="/js/admin.js"></script>
             <%- include('../includes/end.ejs') %>
+            <script src="/js/admin.js"></script>

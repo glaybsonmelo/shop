@@ -56,8 +56,15 @@ app.use(express.static("public"));
 app.use("/images", express.static("images"));
 
 // const acessLogStream = fs.createWriteStream(path.join(__dirname, 'acess.log'), { flags: 'a' });
-
-app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+      useDefaults: true,
+      directives: {
+          "img-src": ["'self'", "https: data:"],
+          "script-src": ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://maxcdn.bootstrapcdn.com", "https://cdn.jsdelivr.net"],
+      }
+  })
+);
 app.use(compression());
 // app.use(morgan('combined', { stream: acessLogStream }));
 
@@ -104,7 +111,7 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 app.use(errorController.get500);
-console.log(process.env.PORT)
+
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(result => {

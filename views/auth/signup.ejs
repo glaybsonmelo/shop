@@ -12,7 +12,7 @@
                 <div class="user-message message--error"><%= errorMessage %></div>
             <% } %>
             <div class="form-control">
-                <label for="name">Name</label>
+                <label for="name">Nome</label>
 
                 <input type="text" name="name" id="name" value="<%= oldInput.name %>">
 
@@ -22,11 +22,11 @@
                 <input class="<%= validationErrors.find(e => e.param == "email") ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInput.email %>">
             </div>
             <div class="form-control">
-                <label for="password">password</label>
+                <label for="password">Senha</label>
                 <input class="<%= validationErrors.find(e => e.param == "password") ? 'invalid' : '' %>" type="text" name="password" id="password" value="<%= oldInput.password %>">
             </div>
             <div class="form-control">
-                <label for="confirmPassword">Confirm password</label>
+                <label for="confirmPassword">Confirmar senha</label>
                 <input class="<%= validationErrors.find(e => e.param == "confirmPassword") ? 'invalid' : '' %>" type="text" name="confirmPassword" id="confirmPassword" value="<%= oldInput.confirmPassword %>">
             </div>
             <input type="text" name="_csrf" id="csrfToken" hidden value="<%= csrfToken %>">
