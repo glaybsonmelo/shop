@@ -88,10 +88,10 @@ exports.getProducts = (req, res) => {
 
 
 exports.getCart = (req, res, next) => {
-  
   req.user
   .populate("cart.items.productId", "title price")
   .then(user => {
+    console.log(user.cart)
     res.render('shop/cart', {
       path: '/cart',
       pageTitle: 'Your Cart',

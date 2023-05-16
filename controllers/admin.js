@@ -1,8 +1,38 @@
 const slugify = require("slugify");
 const { validationResult } = require("express-validator");
 const fileHelper = require("../utils/file");
-
+const multer = require("multer")
 const Product = require("../models/Product");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+
+const s3Client = new S3Client({
+    region: "us-east-2",
+    credentials: {
+      accessKeyId: "AKIAW2V2KQYHB5Y7TXJI",
+      secretAccessKey: "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",
+    },
+    key: function(req, file, cb) {
+        const fileName = file.originalname;
+        cb(null, fileName);
+      },
+  });
+
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: function (req, file, cb) {
+      if (
+        file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/png" ||
+        file.mimetype === "image/jpg"
+      ) {
+        cb(null, true);
+      } else {
+        cb(null, false);
+      }
+    },
+  });
+
+
 
 exports.getAddProduct = (req, res) => {
     res.render("admin/add-product",  {
@@ -14,7 +44,27 @@ exports.getAddProduct = (req, res) => {
     })
 }
 
-exports.postAddProduct = (req, res, next) => {
+exports.postAddProduct = async (req, res, next) => {
+    let fileName = `${new Date().toISOString()}-${req.file.originalname}`;
+    if (!req.file) {
+        return res.status(400).json({ error: "No image file provided." });
+      }
+  
+      try {
+        
+        const s3Params = {
+          Bucket: "shop-node",
+          Key: fileName,
+          Body: req.file.buffer,
+          ContentType: req.file.mimetype,
+        };
+  
+        const command = new PutObjectCommand(s3Params);
+        await s3Client.send(command);
+    } catch(error) {
+        console.error("Error uploading file to S3:", error);
+        res.status(500).json({ error: "Failed to upload file to S3." });
+    };
 
     const errors = validationResult(req);
     const { title, price, description } = req.body;
@@ -41,9 +91,9 @@ exports.postAddProduct = (req, res, next) => {
             errorMessage: errors.array()[0].msg
         })
     }
-    const imageUrl = image.path;
+
     const product = new Product({title, slug:slugify(
-        title, {lower:true}), price, description, imageUrl, userId: req.user
+        title, {lower:true}), price, description, imageUrl: fileName, userId: req.user
     });
     product.save()
         .then(() => {
