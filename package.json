@@ -53,6 +53,7 @@
     "pstree.remy": "^1.1.8",
     "pug": "^3.0.2",
     "readdirp": "^3.6.0",
+    "s3-proxy": "^1.2.1",
     "semver": "^5.7.1",
     "sequelize": "^6.29.1",
     "simple-update-notifier": "^1.1.0",

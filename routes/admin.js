@@ -8,33 +8,6 @@ const adminController = require("../controllers/admin");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 router.get("/add-product", adminController.getAddProduct);
 
-// const originalName = file.originalname;
-// const extension = path.extname(originalName);
-// const newName = Date.now().toString() + extension;
-// const newPath = path.join(__dirname, '..', 'public', 'images', newName);
-// fs.renameSync(file.path, newPath);
-
-
-// const s3Params = {
-//     Bucket: 'my-bucket',
-//     Key: newName,
-//     Body: fs.createReadStream(newPath),
-//     ACL: 'public-read',
-//     ContentType: file.mimetype,
-//   };
-
-const s3Client = new S3Client({
-    region: "us-east-2",
-    credentials: {
-      accessKeyId: "AKIAW2V2KQYHB5Y7TXJI",
-      secretAccessKey: "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",
-    },
-    key: function(req, file, cb) {
-        const fileName = file.originalname;
-        cb(null, fileName);
-      },
-  });
-
   const upload = multer({
     storage: multer.memoryStorage(),
     fileFilter: function (req, file, cb) {
@@ -65,7 +38,7 @@ const s3Client = new S3Client({
 
 router.get("/edit-product/:id", adminController.getEditProduct);
 
-router.post("/edit-product",  [
+router.post("/edit-product", upload.single("image"),  [
     body('title', "Please intert a title valid.")
         .trim()
         .isString()

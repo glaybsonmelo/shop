@@ -12,6 +12,7 @@ const compression = require("compression")
 const crypto = require("crypto");
 const AWS = require("aws-sdk");
 const multerS3 = require("multer-s3");
+const s3Proxy = require("s3-proxy");
 // const morgan = require("morgan");
 // const fs = require("fs");
 // const path = require("path");
@@ -37,34 +38,10 @@ const store = new MongoDBStore({
 const csrfProtection = csrf();
 
 AWS.config.update({
-  accessKeyId: "AKIAW2V2KQYHB5Y7TXJI",
-  secretAccessKey: "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",
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
   region: "us-east-2"
 });
-
-// const s3 = new AWS.S3();
-
-// const upload = multer({
-//   storage: multerS3({
-//     s3: s3,
-//     bucket: 'shop-node',
-//     acl: 'public-read',
-//     key: function(req, file, cb) {
-//       cb(null, new Date().toISOString() + '-' + file.originalname);
-//     },
-//   }),
-//   fileFilter: function(req, file, cb) {
-//     if (
-//       file.mimetype === 'image/jpeg' ||
-//       file.mimetype === 'image/png' ||
-//       file.mimetype === 'image/jpg'
-//     ) {
-//       cb(null, true);
-//     } else {
-//       cb(null, false);
-//     }
-//   },
-// });
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -125,6 +102,12 @@ app.use((req, res, next) => {
     })
 })
 
+app.get('/images/*', s3Proxy({
+  bucket: 'shop-node',
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  region: 'us-east-2',
+}));
 
 app.use(authRoutes);
 app.use("/admin", isAuth, adminRoutes);
