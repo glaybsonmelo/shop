@@ -18,8 +18,9 @@ exports.getLogin = (req, res) => {
         isAuthenticated: req.session.user,
         errorMessage: message,
         oldInput: { email: '', password: '' },
-        validationErrors: []
-    })
+        validationErrors: [],
+        csrfToken: res.locals.csrfToken
+    });
 };
 
 exports.postLogin = (req, res, next) => {
@@ -53,7 +54,7 @@ exports.postLogin = (req, res, next) => {
                 req.session.isLoggedIn = true;
                 // Garantir que só redicionarei apos a sessão for salva no db (evitar não carregamentos de dados no front)
                 return req.session.save(err => {
-                    console.log(err);
+                    //console.log(err);
                     res.redirect("/");
                 });
             }
@@ -203,7 +204,7 @@ exports.getNewPassword = (req, res, next) => {
     })
     .catch(err => {
         const error = new Error(err);
-        console.log(error)
+        //(error)
         error.httpStatusCode = 500;
         return next(error);
     });

@@ -34,6 +34,10 @@ const store = new MongoDBStore({
 
 const csrfProtection = csrf();
 
+
+// isso serve para não repetir em todas as rotas
+
+
 AWS.config.update({
   accessKeyId: process.env.ACCESS_KEY_ID,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
@@ -46,6 +50,7 @@ app.use(express.static("public"));
 app.use("/images", express.static("images"));
 
 // const acessLogStream = fs.createWriteStream(path.join(__dirname, 'acess.log'), { flags: 'a' });
+
 app.use(
   helmet.contentSecurityPolicy({
       useDefaults: true,
@@ -55,10 +60,12 @@ app.use(
           'style-src': ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
           'frame-src': ["'self'", 'js.stripe.com'],
           'font-src': ["'self'", 'fonts.googleapis.com', 'fonts.gstatic.com'],
+          'script-src-attr': ["'self'", "'unsafe-inline'"],
         },
         nonce: crypto.randomBytes(16).toString('base64'),
   })
 )
+
 app.use(compression());
 // app.use(morgan('combined', { stream: acessLogStream }));
 
@@ -71,18 +78,17 @@ app.use(session({
   store: store
 }));
 
+
 app.use(flash());
 app.use(csrfProtection);
 
-// isso serve para não repetir em todas as rotas
 app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn,
-    res.locals.csrfToken = ""//req.csrfToken();
+  res.locals.isAuthenticated = req.session.isLoggedIn
+  res.locals.csrfToken = req.csrfToken();
   next();
 })
 
 app.use((req, res, next) => {
-
   if (!req.session.user) {
     return next();
   }
@@ -115,8 +121,10 @@ app.use(errorController.get500);
 
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(result => {
-    app.listen(process.env.PORT || 3000);
+  .then(() => {
+    app.listen(process.env.PORT || 3000, () => {
+      console.log("server on");
+    });
   })
   .catch(err => {
     console.log(err);

@@ -17,34 +17,16 @@ const s3Client = new S3Client({
       },
   });
 
-  const upload = multer({
-    storage: multer.memoryStorage(),
-    fileFilter: function (req, file, cb) {
-      if (
-        file.mimetype === "image/jpeg" ||
-        file.mimetype === "image/png" ||
-        file.mimetype === "image/jpg"
-      ) {
-        cb(null, true);
-      } else {
-        cb(null, false);
-      }
-    },
-  });
-
-
-
 exports.getAddProduct = (req, res) => {
     res.render("admin/add-product",  {
         pageTitle:"Add Product",
         path:"/admin/add-product",
         validationErrors: [],
         errorMessage: null,
-        oldInput: null
+        oldInput: null,
+        csrfToken: res.locals.csrfToken
     })
 }
-
-
 
 exports.postAddProduct = async (req, res, next) => {
   if (!req.file) {
@@ -61,6 +43,7 @@ exports.postAddProduct = async (req, res, next) => {
       oldInput: { title, price, description },
       validationErrors: errors.array(),
       errorMessage: errors.array()[0].msg,
+      csrfToken: res.locals.csrfToken
     });
   }
 
@@ -95,7 +78,6 @@ exports.postAddProduct = async (req, res, next) => {
   }
 };
 
-
 exports.getEditProduct = (req, res, next) => {
     const productId = req.params.id;
     Product.findById(productId).then(product => {
@@ -107,7 +89,8 @@ exports.getEditProduct = (req, res, next) => {
             path:"/admin/products",
             product,
             errorMessage: null,
-            validationErrors: []
+            validationErrors: [],
+            csrfToken: req.locals.csrfToken
         });
     }).catch(err => {
         const error = new Error(err);
