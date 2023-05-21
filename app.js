@@ -6,12 +6,10 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const flash = require("connect-flash");
-const multer = require("multer");
 const helmet = require("helmet");
 const compression = require("compression")
 const crypto = require("crypto");
 const AWS = require("aws-sdk");
-const multerS3 = require("multer-s3");
 const s3Proxy = require("s3-proxy");
 
 // const morgan = require("morgan");
@@ -26,8 +24,6 @@ const authRoutes = require("./routes/auth");
 const errorController = require("./controllers/error");
 const User = require('./models/User');
 const isAuth = require('./middlewares/is-auth');
-
-
 
 require('dotenv').config();
 
@@ -76,7 +72,7 @@ app.use(session({
 }));
 
 app.use(flash());
-// app.use(csrfProtection);
+app.use(csrfProtection);
 
 // isso serve para não repetir em todas as rotas
 app.use((req, res, next) => {
@@ -125,7 +121,3 @@ mongoose
   .catch(err => {
     console.log(err);
   });
-
-// module.exports = {
-//     upload: upload
-// };
