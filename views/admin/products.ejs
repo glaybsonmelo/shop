@@ -5,7 +5,7 @@
     </head>
 
     <body>
-        <%- include('../includes/navigation.ejs') %>
+        <%- include('../includes/navigation.ejs', { isAuthenticated: isAuthenticated }) %>
 
             <main>
                 <% if (products.length > 0) { %>

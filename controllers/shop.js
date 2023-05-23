@@ -29,7 +29,9 @@ exports.getIndex = (req, res, next) => {
           hasPreviusPage: page > 1,
           nextPage: page + 1,
           previusPage: page - 1,
-          lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+          lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+          csrfToken: req.csrfToken(),
+          isAuthenticated: true
       })
   }).catch(err => {
     const error = new Error(err);
@@ -77,7 +79,9 @@ exports.getProducts = (req, res) => {
             hasPreviusPage: page > 1,
             nextPage: page + 1,
             previusPage: page - 1,
-            lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE)
+            lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+            csrfToken: req.csrfToken(),
+            isAuthenticated: true
         })
     }).catch(err => {
       const error = new Error(err);

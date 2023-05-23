@@ -35,9 +35,6 @@ const store = new MongoDBStore({
 const csrfProtection = csrf();
 
 
-// isso serve para não repetir em todas as rotas
-
-
 AWS.config.update({
   accessKeyId: process.env.ACCESS_KEY_ID,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
@@ -78,15 +75,16 @@ app.use(session({
   store: store
 }));
 
-
-app.use(flash());
+// isso serve para não repetir em todas as rotas
 app.use(csrfProtection);
 
-app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn
-  res.locals.csrfToken = req.csrfToken();
-  next();
-})
+// app.use((req, res, next) => {
+//   res.locals.isAuthenticated = req.session.isLoggedIn
+//   res.locals.csrfToken = req.csrfToken();
+//   next();
+// })
+
+app.use(flash());
 
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -117,7 +115,7 @@ app.use("/admin", isAuth, adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.get404);
-app.use(errorController.get500);
+//app.use(errorController.get500);
 
 mongoose
   .connect(process.env.MONGODB_URI)

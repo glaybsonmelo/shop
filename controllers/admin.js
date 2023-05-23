@@ -18,13 +18,15 @@ const s3Client = new S3Client({
   });
 
 exports.getAddProduct = (req, res) => {
+    console.log(res.locals.csrfToken);
     res.render("admin/add-product",  {
         pageTitle:"Add Product",
         path:"/admin/add-product",
         validationErrors: [],
         errorMessage: null,
         oldInput: null,
-        csrfToken: res.locals.csrfToken
+        csrfToken: req.csrfToken(),
+        isAuthenticated: true
     })
 }
 
@@ -36,16 +38,15 @@ exports.postAddProduct = async (req, res, next) => {
   const errors = validationResult(req);
   const { title, price, description } = req.body;
 
-  if (!errors.isEmpty()) {
-    return res.status(422).render("admin/add-product", {
-      pageTitle: "Add Product",
-      path: "/admin/add-product",
-      oldInput: { title, price, description },
-      validationErrors: errors.array(),
-      errorMessage: errors.array()[0].msg,
-      csrfToken: res.locals.csrfToken
-    });
-  }
+//   if (!errors.isEmpty()) {
+//     return res.status(422).render("admin/add-product", {
+//       pageTitle: "Add Product",
+//       path: "/admin/add-product",
+//       oldInput: { title, price, description },
+//       validationErrors: errors.array(),
+//       errorMessage: errors.array()[0].msg
+//     });
+//   }
 
   const fileName = `${new Date().toISOString()}-${req.file.originalname}`;
   
@@ -65,8 +66,8 @@ exports.postAddProduct = async (req, res, next) => {
       slug: slugify(title, { lower: true }),
       price,
       description,
-      imageUrl: fileName,
-      userId: req.user,
+      imageUrl: "fileName",
+      userId: req.user
     });
 
     await product.save();
@@ -90,7 +91,7 @@ exports.getEditProduct = (req, res, next) => {
             product,
             errorMessage: null,
             validationErrors: [],
-            csrfToken: req.locals.csrfToken
+            csrfToken: res.locals.csrfToken
         });
     }).catch(err => {
         const error = new Error(err);
@@ -158,7 +159,9 @@ exports.getProducts = (req, res, next) => {
         res.render("admin/products", {
             pageTitle:"Admin Products", 
             path:"/admin/products",
-            products
+            products,
+            csrfToken: req.csrfToken(),
+            isAuthenticated: true
         })
     }).catch(err => {
         const error = new Error(err);
