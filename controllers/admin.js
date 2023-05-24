@@ -4,12 +4,13 @@ const fileHelper = require("../utils/file");
 const multer = require("multer")
 const Product = require("../models/Product");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+require("dotenv").config();
 
 const s3Client = new S3Client({
     region: "us-east-2",
     credentials: {
-      accessKeyId: "AKIAW2V2KQYHB5Y7TXJI",
-      secretAccessKey: "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",
+      accessKeyId: process.env.ACCESS_KEY_ID,
+      secretAccessKey: process.env.SECRET_ACCESS_KEY,
     },
     key: function(req, file, cb) {
         const fileName = file.originalname;
@@ -18,14 +19,12 @@ const s3Client = new S3Client({
   });
 
 exports.getAddProduct = (req, res) => {
-    console.log(res.locals.csrfToken);
     res.render("admin/add-product",  {
         pageTitle:"Add Product",
         path:"/admin/add-product",
         validationErrors: [],
         errorMessage: null,
         oldInput: null,
-        csrfToken: req.csrfToken(),
         isAuthenticated: true
     })
 }
@@ -38,15 +37,15 @@ exports.postAddProduct = async (req, res, next) => {
   const errors = validationResult(req);
   const { title, price, description } = req.body;
 
-//   if (!errors.isEmpty()) {
-//     return res.status(422).render("admin/add-product", {
-//       pageTitle: "Add Product",
-//       path: "/admin/add-product",
-//       oldInput: { title, price, description },
-//       validationErrors: errors.array(),
-//       errorMessage: errors.array()[0].msg
-//     });
-//   }
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/add-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+      oldInput: { title, price, description },
+      validationErrors: errors.array(),
+      errorMessage: errors.array()[0].msg
+    });
+  }
 
   const fileName = `${new Date().toISOString()}-${req.file.originalname}`;
   
@@ -66,7 +65,7 @@ exports.postAddProduct = async (req, res, next) => {
       slug: slugify(title, { lower: true }),
       price,
       description,
-      imageUrl: "fileName",
+      imageUrl: fileName,
       userId: req.user
     });
 
@@ -160,8 +159,7 @@ exports.getProducts = (req, res, next) => {
             pageTitle:"Admin Products", 
             path:"/admin/products",
             products,
-            csrfToken: req.csrfToken(),
-            isAuthenticated: true
+            isAuthenticated: res.locals.isAuthenticated
         })
     }).catch(err => {
         const error = new Error(err);

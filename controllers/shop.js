@@ -30,7 +30,6 @@ exports.getIndex = (req, res, next) => {
           nextPage: page + 1,
           previusPage: page - 1,
           lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
-          csrfToken: req.csrfToken(),
           isAuthenticated: true
       })
   }).catch(err => {
@@ -80,7 +79,6 @@ exports.getProducts = (req, res) => {
             nextPage: page + 1,
             previusPage: page - 1,
             lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
-            csrfToken: req.csrfToken(),
             isAuthenticated: true
         })
     }).catch(err => {

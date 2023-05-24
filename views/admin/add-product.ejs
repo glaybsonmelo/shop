@@ -5,8 +5,6 @@
 
 <body>
     <%- include('../includes/navigation.ejs', { isAuthenticated: isAuthenticated }) %>
-
-
     <main>
         <form class="product-form" action="/admin/add-product" method="POST" enctype="multipart/form-data">
             <% if (errorMessage) { %>
@@ -28,7 +26,7 @@
                 <label for="description">Description</label>
                 <textarea class="<%= validationErrors.find(e => e.param == 'price') ? 'description' : '' %>" name="description" id="description" rows="5"><%= oldInput ? oldInput.title : '' %></textarea>
             </div>
-            <input type="text" name="_csrf" id="csrfToken" hidden value="<%= csrfToken %>">
+
             <button class="btn" type="submit">Add Product</button>
         </form>
     </main>

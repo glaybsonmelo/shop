@@ -19,7 +19,6 @@ exports.getLogin = (req, res) => {
         errorMessage: message,
         oldInput: { email: '', password: '' },
         validationErrors: [],
-        csrfToken: res.locals.csrfToken
     });
 };
 

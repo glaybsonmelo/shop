@@ -5,7 +5,6 @@ const fs = require("fs");
 const router = express.Router();
 const adminController = require("../controllers/admin");
 
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 router.get("/add-product", adminController.getAddProduct);
 
   const upload = multer({

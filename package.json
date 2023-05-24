@@ -21,6 +21,8 @@
     "concat-map": "^0.0.1",
     "connect-flash": "^0.1.1",
     "connect-mongodb-session": "^3.1.1",
+    "cookie-parser": "^1.4.6",
+    "csrf-csrf": "^2.2.4",
     "csurf": "^1.11.0",
     "debug": "^3.2.7",
     "dotenv": "^16.0.3",
